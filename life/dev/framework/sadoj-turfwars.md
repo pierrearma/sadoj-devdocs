@@ -9,7 +9,7 @@
 * Auteurs du script: Pierre
 * Emplacement: `[SCRIPT]/[DARK]/sadoj-turfwars`
 
-Ce script gère les [Guerres de territoires](life/guides/turfwars.md).
+Ce script gère les Guerres de territoires.
 
 ## Utilisation
 
