@@ -1,2 +1,3 @@
 # sadoj-devdocs
-sadoj-rp.fr dev documentation website.
+
+[sadoj-rp.fr](https://sadoj-rp.fr/) developpers documentation website built with [Docsify](https://docsify.js.org/).
