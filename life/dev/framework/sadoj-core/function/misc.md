@@ -282,4 +282,18 @@ local entity --[[ entity ]] = exports["sadoj-core"]:GetEntityFromStateBagName(ba
   * **entity:** L'entité du stateBag (`0` si aucune entité).
 <!-- tabs:end -->
 
+#### StringIsAUuid
+<!-- tabs:start -->
+#### **Export (client/serveur)**
+
+```lua
+local result --[[ boolean ]] = exports["sadoj-core"]:StringIsAUuid(str --[[ string ]])
+```
+
+* **Paramètres:**
+  * **str:** La chaîne de caractères à vérifier.
+* **Retour:**
+  * **result:** `true` si la chaîne de caractères est un UUID, `false` sinon.
+<!-- tabs:end -->
+
 {docsify-updated}
