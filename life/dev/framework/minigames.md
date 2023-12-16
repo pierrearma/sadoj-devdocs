@@ -1,6 +1,6 @@
 # Mini-jeux
 
-> Auteur de la page: Pierre.
+> Auteur de la page: Pierre & Thomas.
 
 ---
 
@@ -259,7 +259,7 @@ end
 
 Démo:
 
-![Lockpicking](../../../_media/framework/minigames/minigame_keypackhack.webm ':include :type=video style=max-height:500px;max-width:100%; controls')
+![Keypack](../../../_media/framework/minigames/minigame_keypackhack.webm ':include :type=video style=max-height:500px;max-width:100%; controls')
 
 Ce mini-jeux ne fait aucune animation, uniquement l'affichage. A vous d'ajouter des animations.
 
@@ -292,5 +292,47 @@ end
     * `"failed"` si échoué (a utilisé toutes ses vies).
 
 <!-- tabs:end -->
+
+
+## Voltlab
+
+### Informations
+
+* Auteurs du script: ultrahacx (non SADoJ) & Thomas
+* Emplacement: `[SCRIPT]/[DARK]/[MINIGAMES]/sadoj-minigame-voltlab`
+
+Démo:
+
+![Voltlab](../../../_media/framework/minigames/minigame_voltlab.webm ':include :type=video style=max-height:500px;max-width:100%; controls')
+
+Ce mini-jeux ne fait aucune animation, uniquement l'affichage. A vous d'ajouter des animations.
+
+### Utilisation
+
+<!-- tabs:start -->
+
+#### **Export**
+
+```lua
+TriggerEvent("sadoj-minigame-voltlab:start", time --[[ number ]], cb --[[ function ]])
+
+function cb(result --[[ boolean ]], reason --[[ string|nil ]])
+
+end
+```
+
+* **Paramètres:**
+  * **time:** Temps en secondes. Entre 10 et 60.
+* **Résultats:**
+  * Le résultat passe par la fonction callback `cb`.
+  * **result:** Si le mini-jeux a été terminé avec succès.
+  * **reason:** Raison de l'échec du mini-jeux.
+    * `nil` si réussi.
+    * `"time out"` si le joueur a pris trop de temps.
+    * `"dead"` si le joueur est mort.
+    * `"abort"` si abandonné.
+
+<!-- tabs:end -->
+
 
 {docsify-updated}
