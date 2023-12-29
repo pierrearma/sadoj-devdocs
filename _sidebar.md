@@ -56,6 +56,7 @@
       * [sadoj-ropes](life/dev/framework/sadoj-ropes.md "sadoj-ropes")
       * [sadoj-logs](life/dev/framework/sadoj-logs.md "sadoj-logs")
       * [sadoj-emotes](life/dev/framework/sadoj-emotes.md "sadoj-emotes")
+      * [sadoj-handcuffs](life/dev/framework/sadoj-handcuffs.md "sadoj-handcuffs")
     * Tutoriels
       * [Formattage du texte](https://wiki.rage.mp/index.php?title=Fonts_and_Colors "Formattage du texte")
       * [Whitelist](life/dev/tutorials/whitelist.md "Whitelist")
