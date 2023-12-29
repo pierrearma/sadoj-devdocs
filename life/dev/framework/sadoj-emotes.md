@@ -21,7 +21,7 @@
 ```
 * **Paramètres:**
   * **emoteId:** L'Id de l'animation à jouer.
-  * **textVar:** Le texte à afficher au dessus de la tête du joueur. (Facultatif)
+  * **textVar:** La variable de la texture du prop. (Optionnel)
 <!-- tabs:end -->
 
 ### Arrêter la dernière animation
