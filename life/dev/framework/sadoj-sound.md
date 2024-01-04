@@ -18,10 +18,16 @@ Il est possible de charger un son à partir d'une URL ou à partir d'un fichier 
 
 
 La Liste des options disponibles pour les sons:
-- `volume`: Le volume du son. (type `number`) (**Minimum**: 0.0, **Maximum**: 1.0) (**Par défaut**: 0.3)
+- `volume`: (facultatif) Le volume du son. (type `number`) (**Minimum**: 0.0, **Maximum**: 1.0) (**Par défaut**: 0.3)
 - `offset` (facultatif): Le temps de démarrage du son en secondes. (type `number`) (**Par défaut**: 0.0)
 - `loop` (facultatif): Si le son doit se jouer en boucle. (type `boolean`) (**Par défaut**: `false`)
+- `muted` (facultatif): Si le son doit être joué en sourdine. (type `boolean`) (**Par défaut**: `false`)
 - `unLoadOnFinish` (facultatif): Si le son doit être supprimé de la mémoire une fois terminé. (type `boolean`) (**Par défaut**: `true`)
+- `syncSoundWithSetting` (facultatif): Si le son doit être synchronisé avec le volume du jeu. (type `boolean`) (**Par défaut**: `false`)
+
+
+Pour les son qui sont joués a une position précise ou sur une entité des options supplémentaires sont disponibles:
+
 - `attenuation` (facultatif): Tableau contenant les paramètres d'atténuation du son. (type `table`)
   - `vehicle` (facultatif): Tableau contenant les paramètres d'atténuation du son dans un véhicule. (type `table`)
     - `inside`: Le % d'atténuation du son à l'intérieur du véhicule. (type `number`) (**Minimum**: 0, **Maximum**: 100)
@@ -29,21 +35,22 @@ La Liste des options disponibles pour les sons:
   - `interior` (facultatif): Tableau contenant les paramètres d'atténuation du son dans un intérieur. (type `table`)
     - `sameRoom`: Le % d'atténuation du son dans la même pièce. (type `number`) (**Minimum**: 0, **Maximum**: 100)
     - `diffRoom`: Le % d'atténuation du son dans une pièce différente. (type `number`) (**Minimum**: 0, **Maximum**: 100)
-
-Pour les son qui sont joués a une position précise ou sur des entités, il est possible de choisir des options supplémentaires:
-
 - `range`: La distance maximale a laquelle le son peut être entendu. (type `number`) (**Par défaut**: 10.0)
 - `volumeIsDynamic` (facultatif): Si le volume du son doit être dynamique. Le volume du son sera alors calculé en fonction de la distance entre le joueur et la position du son. (type `boolean`) (**Par défaut**: `true`)
 - `rangeIsDynamic` (facultatif): Si la distance maximale du son doit être dynamique. La distance maximale du son sera alors calculée en fonction du volume du son. (type `boolean`) (**Par défaut**: `true`) (**Note:** Cette option ignore la valeur de `range` si elle est définie.)
 
 
+> [!warning]
+> L'offset n'est pas synchronisé entre tous les joueurs.
+
 ## Utilisation
+
 
 ### Chargement/Déchargement d'un son
 
 #### LoadSound
 <!-- tabs:start -->
-#### **Event (client)**
+#### **Event (client & serveur)**
 ```lua
 local soundId --[[ string ]] = exports["sadoj-sound"]:LoadSound(url --[[ string ]])
 ```
@@ -53,9 +60,22 @@ local soundId --[[ string ]] = exports["sadoj-sound"]:LoadSound(url --[[ string 
   * **soundId**: L'ID du son.
 <!-- tabs:end -->
 
-#### UnloadSound
+#### LoadLocalSound
 <!-- tabs:start -->
 #### **Event (client)**
+```lua
+local soundId --[[ string ]] = exports["sadoj-sound"]:LoadLocalSound(url --[[ string ]])
+```
+* **Paramètres:**
+  * **url**: L'URL du son.
+* **Retourne:**
+  * **soundId**: L'ID du son.
+<!-- tabs:end -->
+
+
+#### UnloadSound
+<!-- tabs:start -->
+#### **Event (client & serveur)**
 ```lua
 exports["sadoj-sound"]:UnloadSound(soundId --[[ string ]])
 ```
@@ -63,12 +83,24 @@ exports["sadoj-sound"]:UnloadSound(soundId --[[ string ]])
   * **soundId**: L'ID du son.
 <!-- tabs:end -->
 
+#### UnLoadLocalSound
+<!-- tabs:start -->
+#### **Event (client)**
+```lua
+exports["sadoj-sound"]:UnLoadLocalSound(soundId --[[ string ]])
+```
+* **Paramètres:**
+  * **soundId**: L'ID du son.
+<!-- tabs:end -->
+
+
+
 
 ### Jouer un son
 
 #### PlaySound
 <!-- tabs:start -->
-#### **Event (client)**
+#### **Event (client & serveur)**
 ```lua
 exports["sadoj-sound"]:PlaySound(soundId --[[ string ]], options --[[ table ]])
 ```
@@ -77,9 +109,20 @@ exports["sadoj-sound"]:PlaySound(soundId --[[ string ]], options --[[ table ]])
   * **options**: Les options du son.
 <!-- tabs:end -->
 
-#### PlaySoundFromCoords
+#### PlayLocalSound
 <!-- tabs:start -->
 #### **Event (client)**
+```lua
+exports["sadoj-sound"]:PlayLocalSound(soundId --[[ string ]], options --[[ table ]])
+```
+* **Paramètres:**
+  * **soundId**: L'ID du son.
+  * **options**: Les options du son.
+<!-- tabs:end -->
+
+#### PlaySoundFromCoords
+<!-- tabs:start -->
+#### **Event (client & serveur)**
 ```lua
 exports["sadoj-sound"]:PlaySoundFromCoords(soundId --[[ string ]], coords --[[ vector3 ]], options --[[ table ]])
 ```
@@ -89,9 +132,21 @@ exports["sadoj-sound"]:PlaySoundFromCoords(soundId --[[ string ]], coords --[[ v
   * **options**: Les options du son.
 <!-- tabs:end -->
 
-#### PlaySoundFromEntity
+#### PlayLocalSoundFromCoords
 <!-- tabs:start -->
 #### **Event (client)**
+```lua
+exports["sadoj-sound"]:PlayLocalSoundFromCoords(soundId --[[ string ]], coords --[[ vector3 ]], options --[[ table ]])
+```
+* **Paramètres:**
+  * **soundId**: L'ID du son.
+  * **coords**: Les coordonnées du son.
+  * **options**: Les options du son.
+<!-- tabs:end -->
+
+#### PlaySoundFromEntity
+<!-- tabs:start -->
+#### **Event (client & serveur)**
 ```lua
 exports["sadoj-sound"]:PlaySoundFromEntity(soundId --[[ string ]], entity --[[ number ]], options --[[ table ]])
 ```
@@ -101,12 +156,25 @@ exports["sadoj-sound"]:PlaySoundFromEntity(soundId --[[ string ]], entity --[[ n
   * **options**: Les options du son.
 <!-- tabs:end -->
 
+#### PlayLocalSoundFromEntity
+<!-- tabs:start -->
+#### **Event (client)**
+```lua
+exports["sadoj-sound"]:PlayLocalSoundFromEntity(soundId --[[ string ]], entity --[[ number ]], options --[[ table ]])
+```
+* **Paramètres:**
+  * **soundId**: L'ID du son.
+  * **entity**: L'entité sur laquelle le son doit être joué.
+  * **options**: Les options du son.
+<!-- tabs:end -->
+
+
 <!-- SETTER -->
 ### Modifier un son
 
 #### SetSoundVolume
 <!-- tabs:start -->
-#### **Event (client)**
+#### **Event (client & serveur)**
 ```lua
 exports["sadoj-sound"]:SetSoundVolume(soundId --[[ string ]], volume --[[ number ]])
 ```
@@ -117,7 +185,7 @@ exports["sadoj-sound"]:SetSoundVolume(soundId --[[ string ]], volume --[[ number
 
 #### SetSoundOffset
 <!-- tabs:start -->
-#### **Event (client)**
+#### **Event (client & serveur)**
 ```lua
 exports["sadoj-sound"]:SetSoundOffset(soundId --[[ string ]], offset --[[ number ]])
 ```
@@ -128,7 +196,7 @@ exports["sadoj-sound"]:SetSoundOffset(soundId --[[ string ]], offset --[[ number
 
 #### SetSoundLoop
 <!-- tabs:start -->
-#### **Event (client)**
+#### **Event (client & serveur)**
 ```lua
 exports["sadoj-sound"]:SetSoundLoop(soundId --[[ string ]], loop --[[ boolean ]])
 ```
@@ -139,7 +207,7 @@ exports["sadoj-sound"]:SetSoundLoop(soundId --[[ string ]], loop --[[ boolean ]]
 
 #### SetSoundUnLoadOnFinish
 <!-- tabs:start -->
-#### **Event (client)**
+#### **Event (client & serveur)**
 ```lua
 exports["sadoj-sound"]:SetSoundUnLoadOnFinish(soundId --[[ string ]], unLoadOnFinish --[[ boolean ]])
 ```
@@ -150,7 +218,7 @@ exports["sadoj-sound"]:SetSoundUnLoadOnFinish(soundId --[[ string ]], unLoadOnFi
 
 #### SetSoundAttenuation
 <!-- tabs:start -->
-#### **Event (client)**
+#### **Event (client & serveur)**
 ```lua
 exports["sadoj-sound"]:SetSoundAttenuation(soundId --[[ string ]], attenuation --[[ table ]])
 ```
@@ -161,7 +229,7 @@ exports["sadoj-sound"]:SetSoundAttenuation(soundId --[[ string ]], attenuation -
 
 #### PauseSound
 <!-- tabs:start -->
-#### **Event (client)**
+#### **Event (client & serveur)**
 ```lua
 exports["sadoj-sound"]:PauseSound(soundId --[[ string ]])
 ```
@@ -171,7 +239,7 @@ exports["sadoj-sound"]:PauseSound(soundId --[[ string ]])
 
 #### ResumeSound
 <!-- tabs:start -->
-#### **Event (client)**
+#### **Event (client & serveur)**
 ```lua
 exports["sadoj-sound"]:ResumeSound(soundId --[[ string ]])
 ```
