@@ -73,11 +73,11 @@ local soundId --[[ string ]] = exports["sadoj-sound"]:LoadLocalSound(url --[[ st
 <!-- tabs:end -->
 
 
-#### UnloadSound
+#### UnLoadSound
 <!-- tabs:start -->
 #### **Event (client & serveur)**
 ```lua
-exports["sadoj-sound"]:UnloadSound(soundId --[[ string ]])
+exports["sadoj-sound"]:UnLoadSound(soundId --[[ string ]])
 ```
 * **Paramètres:**
   * **soundId**: L'ID du son.
