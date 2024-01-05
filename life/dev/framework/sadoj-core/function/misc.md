@@ -212,7 +212,7 @@ local result --[[ boolean ]] = exports["sadoj-core"]:IsADevServer()
 Permet de formater un nombre en une chaîne de caractères. Exemple: `123456789` deviendra `$123,456,789`.
 
 <!-- tabs:start -->
-#### **Export (client/serveur)**
+#### **Export (client & serveur)**
 
 ```lua
 local result --[[ string ]] = exports["sadoj-core"]:FormatNum(number --[[ number ]][, decimals --[[ integer ]]])
@@ -269,7 +269,7 @@ local result --[[ string ]] = exports["sadoj-core"]:GetGroundAtCoords(coords --[
 
 #### GetEntityFromStateBagName
 <!-- tabs:start -->
-#### **Export (client/serveur)**
+#### **Export (client & serveur)**
 
 ```lua
 local entity --[[ entity ]] = exports["sadoj-core"]:GetEntityFromStateBagName(bagName --[[ string ]][, requestCollision --[[ boolean ]]])
@@ -284,7 +284,7 @@ local entity --[[ entity ]] = exports["sadoj-core"]:GetEntityFromStateBagName(ba
 
 #### StringIsAUuid
 <!-- tabs:start -->
-#### **Export (client/serveur)**
+#### **Export (client & serveur)**
 
 ```lua
 local result --[[ boolean ]] = exports["sadoj-core"]:StringIsAUuid(str --[[ string ]])
@@ -295,5 +295,37 @@ local result --[[ boolean ]] = exports["sadoj-core"]:StringIsAUuid(str --[[ stri
 * **Retour:**
   * **result:** `true` si la chaîne de caractères est un UUID, `false` sinon.
 <!-- tabs:end -->
+
+#### TableContainsValue
+<!-- tabs:start -->
+#### **Export (client & serveur)**
+
+```lua
+local result --[[ boolean ]] = exports["sadoj-core"]:TableContainsValue(table --[[ table ]], value --[[ any ]])
+```
+
+* **Paramètres:**
+  * **table:** La table à vérifier.
+  * **value:** La valeur à vérifier.
+* **Retour:**
+  * **result:** `true` si la table contient la valeur, `false` sinon.
+<!-- tabs:end -->
+
+#### TableRemoveValue
+<!-- tabs:start -->
+#### **Export (client & serveur)**
+
+```lua
+local result --[[ boolean ]] = exports["sadoj-core"]:TableRemoveValue(table --[[ table ]], value --[[ any ]])
+```
+
+* **Paramètres:**
+  * **table:** La table à modifier.
+  * **value:** La valeur à supprimer.
+* **Retour:**
+  * **result:** `true` si la valeur a été supprimée, `false` sinon.
+<!-- tabs:end -->
+
+
 
 {docsify-updated}
