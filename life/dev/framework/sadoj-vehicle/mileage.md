@@ -55,5 +55,19 @@ local mileage = exports["sadoj-vehicle"]:GetVehicleMileage(vehicle --[[ vehicle 
 <!-- tabs:end -->
 
 
+## Conversion en miles
+
+<!-- tabs:start -->
+### **Export (client & serveur)**
+
+```lua
+local miles = exports["sadoj-vehicle"]:ConvertMilageToMiles(mileage --[[ number ]])
+```
+* **Paramètres:**
+  * **kilometers:** le nombre de kilomètres.
+* **Retour:**
+  * **miles:** le nombre de miles.
+<!-- tabs:end -->
+
 
 {docsify-updated}
