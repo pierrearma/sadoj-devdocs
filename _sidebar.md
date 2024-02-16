@@ -36,6 +36,7 @@
         * [Fenêtres](life/dev/framework/sadoj-vehicle/windows.md "Fenêtres")
         * [Portes](life/dev/framework/sadoj-vehicle/doors.md "Portes")
         * [Roues/Pneus](life/dev/framework/sadoj-vehicle/wheels_tires.md "Roues/Pneus")
+        * [Dégâts](life/dev/framework/sadoj-vehicle/damage.md "Dégâts")
         * [Divers](life/dev/framework/sadoj-vehicle/misc.md "Divers")
         * [Autorisation des véhicules locaux](life/dev/framework/sadoj-vehicle/localvehiclepermission.md "Autorisation des véhicules locaux")
       * [sadoj-dispatch](life/dev/framework/sadoj-dispatch.md "sadoj-dispatch")

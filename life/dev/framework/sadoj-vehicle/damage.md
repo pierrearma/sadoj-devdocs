@@ -4,575 +4,292 @@
 
 ---
 
-## Utilisation
+Ce module permet de gérer la synchronisation des dégâts des véhicules.
+
+
+# Général
 
 Chaque dégâts (visuel et mécanique) d'un véhicule est stocké sous forme de tableau :
 
-* **EngineHealth** : Les dégâts du moteur (type `number`)  *(**Minimum**: `-4000`, **Maximum:** `1000`)*
-  * **-4000**: Le moteur est détruit
-  * **0 et moins**: Le moteur prend feu et la santé décline rapidement
-  * **300**: Le moteur fume et perd en fonctionnalité
-  * **1000**: Le moteur est parfait
-* **BodyHealth** : La vie du corps du moteur (type `number`)  *(**Minimum**: `0`, **Maximum:** `1000`)*
-* **PetrolTankHealth** : La vie du réservoir de carburant (type `number`)  *(**Minimum**: `0`, **Maximum:** `1000`)*
-  * **650**: Le réservoir commence à fuir
-* **Deformations** : Tableau avec les positions et l'intensité de tout les point de déformation (type `table`)
-```lua
-  {
-    {{"x" :VehicleOffsetX --[[ integer ]], "y":VehicleOffsetY --[[ integer ]], "z":VehicleOffsetZ --[[ integer ]]}, DamageStrength --[[ integer ]]},
-    {{"x" :VehicleOffsetX --[[ integer ]], "y":VehicleOffsetY --[[ integer ]], "z":VehicleOffsetZ --[[ integer ]]}, DamageStrength --[[ integer ]]},
-    ...
-  }
-  ```
-* **DoorsDamaged** : Tableau contenant tous les dégâts des portes (type `table`) (**DoorId** de `0` à `5`)
+* **exploded** : si le véhicule est explosé. (type `boolean`)
+* **engineHealth** : la santé du moteur. (type `number`)  *(**Minimum**: `-4000`, **Maximum:** `1000`)*
+  * **-4000**: Le moteur est détruit.
+  * **0 et moins**: Le moteur prend feu et la santé décline rapidement.
+  * **300**: Le moteur fume et perd en fonctionnalité.
+  * **1000**: Le moteur est en parfait état.
+* **bodyHealth** : la santé de la carrosserie. (type `number`)  *(**Minimum**: `0`, **Maximum:** `1000`)*
+* **petrolTankHealth** : la santé du réservoir. (type `number`)  *(**Minimum**: `0`, **Maximum:** `1000`)*
+  * **650**: Le réservoir commence à fuir.
+* **heliMainRotorHealth** : la santé du rotor principal (uniquement pour les hélicoptères). (type `number`)  *(**Minimum**: `0`, **Maximum:** `1000`)*
+* **heliTailRotorHealth** : la santé du rotor arrière (uniquement pour les hélicoptères). (type `number`)  *(**Minimum**: `0`, **Maximum:** `1000`)*
+* **deformations** : Un tableau contenant chaque déformation de la carrosserie. (type `table`)
   ```lua
-  {
-    [0] = IsDoorDamaged --[[ boolean ]]
-    [1] = IsDoorDamaged --[[ boolean ]]
-    [2] = IsDoorDamaged --[[ boolean ]]
-    [3] = IsDoorDamaged --[[ boolean ]]
-    ...
-  }
+    {
+      {{"x" :offsetX --[[ integer ]], "y":offsetY --[[ integer ]], "z":offsetZ --[[ integer ]]}, damageStrength --[[ integer ]]},
+      {{"x" :offsetX --[[ integer ]], "y":offsetY --[[ integer ]], "z":offsetZ --[[ integer ]]}, damageStrength --[[ integer ]]},
+      ...
+    }
   ```
-* **WindowsDamaged** : Tableau contenant tous les dégâts des fenêtres (type `table`) (**WindowId** de `0` à `7`)
+* **windows** : Un tableau contenant chaque fenêtre du véhicule. (type `table`)
   ```lua
-  {
-    [0] = IsWindowIntact --[[ boolean ]]
-    [1] = IsWindowIntact --[[ boolean ]]
-    [2] = IsWindowIntact --[[ boolean ]]
-    [3] = IsWindowIntact --[[ boolean ]]
-    ...
-  }
+    {
+      damaged = {
+        [windowIndex --[[ integer ]]] = isDamaged --[[ boolean ]],
+        ...
+      },
+      open = {
+        [windowIndex --[[ integer ]]] = isOpen --[[ boolean ]],
+        ...
+      }
+    }
   ```
-* **WheelsHealth** : Tableau contenant toutes les informations sur les roues (type `table`) (**wheelsId** de `0` à `5`)
+* **doors** : Un tableau contenant chaque porte du véhicule. (type `table`)
   ```lua
-  {
-    [0] = WheelsHealth --[[ number ]]
-    [1] = WheelsHealth --[[ number ]]
-    [2] = WheelsHealth --[[ number ]]
-    [3] = WheelsHealth --[[ number ]]
-    ...
-  }
+    {
+      broken = {
+        [doorIndex --[[ integer ]]] = isDamaged --[[ boolean ]],
+        ...
+      },
+    }
   ```
-* **TyresHealth** : Tableau contenant toutes les informations sur les pneu (type `table`) (**wheelsId** de `0` à `5`)
+* **wheels** : Un tableau contenant chaque roue du véhicule. (type `table`)
   ```lua
-  {
-    [0] = TyresHealth --[[ number ]]
-    [1] = TyresHealth --[[ number ]]
-    [2] = TyresHealth --[[ number ]]
-    [3] = TyresHealth --[[ number ]]
-    ...
-  }
+    {
+      health = {
+        [wheelIndex --[[ integer ]]] = wheelHealth --[[ number ]],
+        ...
+      },
+      broken = {
+        [wheelIndex --[[ integer ]]] = isBroken --[[ boolean ]],
+        ...
+      }
+    }
+  ```
+* **tyres** : Un tableau contenant chaque pneu du véhicule. (type `table`)
+  ```lua
+    {
+      health = {
+        [tyreIndex --[[ integer ]]] = tyreHealth --[[ number ]],
+        ...
+      },
+      burst = {
+        [tyreIndex --[[ integer ]]] = isBurst --[[ boolean ]],
+        ...
+      }
+    }
   ```
 
-## Récupération des données
 
-### GetVehicleDamage
+## Récupérer les dégâts d'un véhicule
+
 <!-- tabs:start -->
-### **Export (client)**
+### **Export (client & serveur)**
 ```lua
-local result --[[ table ]] = exports["sadoj-vehicle"]:GetVehicleDamage(vehicle --[[ vehicle ]])
+local damage --[[ table ]] = exports["sadoj-vehicle"]:GetAllVehicleDamage(vehicle --[[ vehicle ]])
 ```
 * **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer les dégâts.
-* **Retourne:**
-  * **result:** Tableau contenant les dégâts du véhicule.
-### **Export (serveur)**
-```lua
-local result --[[ table ]] = exports["sadoj-vehicle"]:GetVehicleDamage(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer les dégâts.
-* **Retourne:**
-  * **result:** Tableau contenant les dégâts du véhicule.
+  * **vehicle:** le véhicule.
+* **Retour:**
+  * **damage:** les dégâts du véhicule.
 <!-- tabs:end -->
 
-### GetVehicleEngineHealth
-> [!note]
-> Cette fonction ne renvoie pas la valeur en temps réel, la valeur est mise à jour à chaque fois que le véhicule est synchronisé avec les autres joueurs. Pour récupérer la valeur en temps réel vous pouvez utiliser la native `GetVehicleEngineHealth`
+## Appliquer les dégâts d'un véhicule
 
 <!-- tabs:start -->
-### **Export (client)**
+### **Export (client & serveur)**
+```lua
+exports["sadoj-vehicle"]:SetAllVehicleDamage(vehicle --[[ vehicle ]], damage --[[ table ]])
+```
+* **Paramètres:**
+  * **vehicle:** le véhicule.
+  * **damage:** les dégâts du véhicule.
+<!-- tabs:end -->
+
+## Réparer tout les dégâts visuels d'un véhicule
+
+<!-- tabs:start -->
+### **Export (client & serveur)**
+```lua
+exports["sadoj-vehicle"]:FixAllVehicleVisualDamage(vehicle --[[ vehicle ]])
+```
+* **Paramètres:**
+  * **vehicle:** le véhicule.
+<!-- tabs:end -->
+
+
+
+
+# Moteur
+
+## Définir la santé du moteur
+
+<!-- tabs:start -->
+### **Export (client & serveur)**
+```lua
+exports["sadoj-vehicle"]:SetVehicleEngineHealth(vehicle --[[ vehicle ]], engineHealth --[[ number ]])
+```
+* **Paramètres:**
+  * **vehicle:** le véhicule.
+  * **engineHealth:** la santé du moteur. *(**Minimum**: `-4000`, **Maximum:** `1000`)*
+<!-- tabs:end -->
+
+## Récupérer la santé du moteur
+
+<!-- tabs:start -->
+### **Export (client & serveur)**
 ```lua
 local engineHealth --[[ number ]] = exports["sadoj-vehicle"]:GetVehicleEngineHealth(vehicle --[[ vehicle ]])
 ```
 * **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer les dégâts du moteur.
-* **Retourne:**
-  * **engineHealth:** La santé du moteur du véhicule.
-### **Export (serveur)**
-```lua
-local engineHealth --[[ number ]] = exports["sadoj-vehicle"]:GetVehicleEngineHealth(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer les dégâts du moteur.
-* **Retourne:**
-  * **engineHealth:** La santé du moteur du véhicule.
+  * **vehicle:** le véhicule.
+* **Retour:**
+  * **engineHealth:** la santé du moteur.
 <!-- tabs:end -->
 
-### GetVehicleBodyHealth
-> [!note]
-> Cette fonction ne renvoie pas la valeur en temps réel, la valeur est mise à jour à chaque fois que le véhicule est synchronisé avec les autres joueurs. Pour récupérer la valeur en temps réel vous pouvez utiliser la native `GetVehicleBodyHealth`
+## Définir la santé du rotor principal
 
 <!-- tabs:start -->
-### **Export (client)**
+### **Export (client & serveur)**
+```lua
+exports["sadoj-vehicle"]:SetHeliMainRotorHealth(vehicle --[[ vehicle ]], heliMainRotorHealth --[[ number ]])
+```
+* **Paramètres:**
+  * **vehicle:** le véhicule.
+  * **heliMainRotorHealth:** la santé du rotor principal. *(**Minimum**: `0`, **Maximum:** `1000`)*
+<!-- tabs:end -->
+
+## Récupérer la santé du rotor principal
+
+<!-- tabs:start -->
+### **Export (client & serveur)**
+```lua
+local heliMainRotorHealth --[[ number ]] = exports["sadoj-vehicle"]:GetHeliMainRotorHealth(vehicle --[[ vehicle ]])
+```
+* **Paramètres:**
+  * **vehicle:** le véhicule.
+* **Retour:**
+  * **heliMainRotorHealth:** la santé du rotor principal.
+<!-- tabs:end -->
+
+## Définir la santé du rotor arrière
+
+<!-- tabs:start -->
+### **Export (client & serveur)**
+```lua
+exports["sadoj-vehicle"]:SetHeliTailRotorHealth(vehicle --[[ vehicle ]], heliTailRotorHealth --[[ number ]])
+```
+* **Paramètres:**
+  * **vehicle:** le véhicule.
+  * **heliTailRotorHealth:** la santé du rotor arrière. *(**Minimum**: `0`, **Maximum:** `1000`)*
+<!-- tabs:end -->
+
+## Récupérer la santé du rotor arrière
+
+<!-- tabs:start -->
+### **Export (client & serveur)**
+```lua
+local heliTailRotorHealth --[[ number ]] = exports["sadoj-vehicle"]:GetHeliTailRotorHealth(vehicle --[[ vehicle ]])
+```
+* **Paramètres:**
+  * **vehicle:** le véhicule.
+* **Retour:**
+  * **heliTailRotorHealth:** la santé du rotor arrière.
+<!-- tabs:end -->
+
+# Carrosserie
+
+## Définir la santé de la carrosserie
+
+<!-- tabs:start -->
+### **Export (client & serveur)**
+```lua
+exports["sadoj-vehicle"]:SetVehicleBodyHealth(vehicle --[[ vehicle ]], bodyHealth --[[ number ]])
+```
+* **Paramètres:**
+  * **vehicle:** le véhicule.
+  * **bodyHealth:** la santé de la carrosserie. *(**Minimum**: `0`, **Maximum:** `1000`)*
+<!-- tabs:end -->
+
+## Récupérer la santé de la carrosserie
+
+<!-- tabs:start -->
+### **Export (client & serveur)**
 ```lua
 local bodyHealth --[[ number ]] = exports["sadoj-vehicle"]:GetVehicleBodyHealth(vehicle --[[ vehicle ]])
 ```
 * **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer les dégâts.
-* **Retourne:**
-  * **bodyHealth:** La santé
-### **Export (serveur)**
-```lua
-local bodyHealth --[[ number ]] = exports["sadoj-vehicle"]:GetVehicleBodyHealth(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer les dégâts.
-* **Retourne:**
-  * **bodyHealth:** La santé
+  * **vehicle:** le véhicule.
+* **Retour:**
+  * **bodyHealth:** la santé de la carrosserie.
 <!-- tabs:end -->
 
-### GetVehiclePetrolTankHealth
-> [!note]
-> Cette fonction ne renvoie pas la valeur en temps réel, la valeur est mise à jour à chaque fois que le véhicule est synchronisé avec les autres joueurs. Pour récupérer la valeur en temps réel vous pouvez utiliser la native `GetVehiclePetrolTankHealth`
+## Définir les déformations de la carrosserie
 
 <!-- tabs:start -->
-### **Export (client)**
+### **Export (client & serveur)**
 ```lua
-local petrolTankHealth --[[ number ]] = exports["sadoj-vehicle"]:GetVehiclePetrolTankHealth(vehicle --[[ vehicle ]])
+exports["sadoj-vehicle"]:SetVehicleDeformations(vehicle --[[ vehicle ]], deformations --[[ table ]])
 ```
 * **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer les dégâts du réservoir de carburant.
-* **Retourne:**
-  * **petrolTankHealth:** La santé du réservoir de carburant du véhicule.
-### **Export (serveur)**
-```lua
-local petrolTankHealth --[[ number ]] = exports["sadoj-vehicle"]:GetVehiclePetrolTankHealth(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer les dégâts du réservoir de carburant.
-* **Retourne:**
-  * **petrolTankHealth:** La santé du réservoir de carburant du véhicule.
+  * **vehicle:** le véhicule.
+  * **deformations:** les déformations de la carrosserie.
 <!-- tabs:end -->
 
-### GetVehicleDeformations
-> [!note]
-> Cette fonction ne renvoie pas la valeur en temps réel, la valeur est mise à jour à chaque fois que le véhicule est synchronisé avec les autres joueurs. Pour récupérer la valeur en temps réel vous pouvez utiliser l'export `GetVehicleDeformationThisFrame`
+## Récupérer les déformations de la carrosserie
 
 <!-- tabs:start -->
-### **Export (client)**
+### **Export (client & serveur)**
 ```lua
 local deformations --[[ table ]] = exports["sadoj-vehicle"]:GetVehicleDeformations(vehicle --[[ vehicle ]])
 ```
 * **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer les points de déformation.
-* **Retourne:**
-  * **deformations:** Tableau contenant les points de déformation du véhicule.
-### **Export (serveur)**
-```lua
-local deformations --[[ number ]] = exports["sadoj-vehicle"]:GetVehicleDeformations(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer les points de déformation.
-* **Retourne:**
-  * **deformations:** Tableau contenant les points de déformation du véhicule.
+  * **vehicle:** le véhicule.
+* **Retour:**
+  * **deformations:** les déformations de la carrosserie.
 <!-- tabs:end -->
 
-### GetVehicleDeformationThisFrame
-> [!note]
-> Cette fonction renvoie la valeur en temps réel des points de déformation du véhicule. Il est plus optimisé d'utiliser l'export `GetVehicleDeformations`, pour eviter de refaire le calcul de tous les points de déformation.
+## Réparer une déformation de la carrosserie
 
 <!-- tabs:start -->
-### **Export (client)**
+### **Export (client & serveur)**
 ```lua
-local deformations --[[ table ]] = exports["sadoj-vehicle"]:GetVehicleDeformationThisFrame(vehicle --[[ vehicle ]])
+exports["sadoj-vehicle"]:FixVehicleDeformation(vehicle --[[ vehicle ]], deformationIndex --[[ number ]])
 ```
 * **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer les points de déformation.
-* **Retourne:**
-  * **deformations:** Tableau contenant les points de déformation du véhicule.
+  * **vehicle:** le véhicule.
+  * **deformationIndex:** l'index de la déformation.
 <!-- tabs:end -->
 
-### GetNumberOfVehicleDeformation
-> [!note]
-> Cette fonction ne renvoie pas la valeur en temps réel, la valeur est mise à jour à chaque fois que le véhicule est synchronisé avec les autres joueurs.
+
+# Réservoir
+
+## Définir la santé du réservoir
+
 <!-- tabs:start -->
-### **Export (client)**
+### **Export (client & serveur)**
 ```lua
-local deformations --[[ number ]] = exports["sadoj-vehicle"]:GetNumberOfVehicleDeformation(vehicle --[[ vehicle ]])
+exports["sadoj-vehicle"]:SetVehiclePetrolTankHealth(vehicle --[[ vehicle ]], petrolTankHealth --[[ number ]])
 ```
 * **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer le nombre de points de déformation.
-* **Retourne:**
-  * **deformations:** Nombre de points de déformation du véhicule.
-
-### **Export (serveur)**
-```lua
-local deformations --[[ number ]] = exports["sadoj-vehicle"]:GetNumberOfVehicleDeformation(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer le nombre de points de déformation.
-* **Retourne:**
-  * **deformations:** Nombre de points de déformation du véhicule.
+  * **vehicle:** le véhicule.
+  * **petrolTankHealth:** la santé du réservoir. *(**Minimum**: `0`, **Maximum:** `1000`)*
 <!-- tabs:end -->
 
-### GetWheelsHealth
-> [!note]
-> Cette fonction ne renvoie pas la valeur en temps réel, la valeur est mise à jour à chaque fois que le véhicule est synchronisé avec les autres joueurs.
+## Récupérer la santé du réservoir
+
 <!-- tabs:start -->
-### **Export (client)**
+### **Export (client & serveur)**
 ```lua
-local wheelsHealth --[[ table ]] = exports["sadoj-vehicle"]:GetWheelsHealth(vehicle --[[ vehicle ]])
+local petrolTankHealth --[[ number ]] = exports["sadoj-vehicle"]:GetVehiclePetrolTankHealth(vehicle --[[ vehicle ]])
 ```
 * **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé des roues.
-* **Retourne:**
-  * **wheelsHealth:** Tableau contenant la santé des roues du véhicule.
-### **Export (serveur)**
-```lua
-local wheelsHealth --[[ table ]] = exports["sadoj-vehicle"]:GetWheelsHealth(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé des roues.
-* **Retourne:**
-  * **wheelsHealth:** Tableau contenant la santé des roues du véhicule.
-<!-- tabs:end -->
-
-### GetWheelHealthByWheelId
-> [!note]
-> Cette fonction ne renvoie pas la valeur en temps réel, la valeur est mise à jour à chaque fois que le véhicule est synchronisé avec les autres joueurs.
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-local wheelHealth --[[ number ]] = exports["sadoj-vehicle"]:GetWheelHealthByWheelId(vehicle --[[ vehicle ]], wheelId --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé de la roue.
-  * **wheelId:** L'identifiant de la roue.
-* **Retourne:**
-  * **wheelHealth:** La santé de la roue.
-### **Export (serveur)**
-```lua
-local wheelHealth --[[ number ]] = exports["sadoj-vehicle"]:GetWheelHealthByWheelId(vehicle --[[ vehicle ]], wheelId --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé de la roue.
-  * **wheelId:** L'identifiant de la roue.
-* **Retourne:**
-  * **wheelHealth:** La santé de la roue.
-<!-- tabs:end -->
-
-### GetTyresHealth
-> [!note]
-> Cette fonction ne renvoie pas la valeur en temps réel, la valeur est mise à jour à chaque fois que le véhicule est synchronisé avec les autres joueurs.
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-local tyresHealth --[[ table ]] = exports["sadoj-vehicle"]:GetTyresHealth(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé des pneus.
-* **Retourne:**
-  * **tyresHealth:** Tableau contenant la santé des pneus du véhicule.
-### **Export (serveur)**
-```lua
-local tyresHealth --[[ table ]] = exports["sadoj-vehicle"]:GetTyresHealth(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé des pneus.
-* **Retourne:**
-  * **tyresHealth:** Tableau contenant la santé des pneus du véhicule.
-<!-- tabs:end -->
-
-### GetTyreHealthByTyreId
-> [!note]
-> Cette fonction ne renvoie pas la valeur en temps réel, la valeur est mise à jour à chaque fois que le véhicule est synchronisé avec les autres joueurs.
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-local tyreHealth --[[ number ]] = exports["sadoj-vehicle"]:GetTyreHealthByTyreId(vehicle --[[ vehicle ]], wheelId --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé du pneu.
-  * **wheelId:** L'identifiant de la roue.
-* **Retourne:**
-  * **tyreHealth:** La santé du pneu.
-### **Export (serveur)**
-```lua
-local tyreHealth --[[ number ]] = exports["sadoj-vehicle"]:GetTyreHealthByTyreId(vehicle --[[ vehicle ]], wheelId --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé du pneu.
-  * **wheelId:** L'identifiant de la roue.
-* **Retourne:**
-  * **tyreHealth:** La santé du pneu.
-<!-- tabs:end -->
-
-### GetDoorsDamaged
-> [!note]
-> Cette fonction ne renvoie pas la valeur en temps réel, la valeur est mise à jour à chaque fois que le véhicule est synchronisé avec les autres joueurs.
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-local doorsDamaged --[[ table ]] = exports["sadoj-vehicle"]:GetDoorsDamaged(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé des portes.
-* **Retourne:**
-  * **doorsDamaged:** Tableau contenant la santé des portes du véhicule.
-### **Export (serveur)**
-```lua
-local doorsDamaged --[[ table ]] = exports["sadoj-vehicle"]:GetDoorsDamaged(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé des portes.
-* **Retourne:**
-  * **doorsDamaged:** Tableau contenant la santé des portes du véhicule.
-<!-- tabs:end -->
-
-### GetDoorDamagedByDoorId
-> [!note]
-> Cette fonction ne renvoie pas la valeur en temps réel, la valeur est mise à jour à chaque fois que le véhicule est synchronisé avec les autres joueurs.
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-local doorDamaged --[[ boolean ]] = exports["sadoj-vehicle"]:GetDoorDamagedByDoorId(vehicle --[[ vehicle ]], doorId --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé de la porte.
-  * **doorId:** L'identifiant de la porte.
-* **Retourne:**
-  * **doorDamaged:** `true` si la porte est endommagée, `false` sinon.
-### **Export (serveur)**
-```lua
-local doorDamaged --[[ boolean ]] = exports["sadoj-vehicle"]:GetDoorDamagedByDoorId(vehicle --[[ vehicle ]], doorId --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé de la porte.
-  * **doorId:** L'identifiant de la porte.
-* **Retourne:**
-  * **doorDamaged:** `true` si la porte est endommagée, `false` sinon.
-<!-- tabs:end -->
-
-### GetWindowsDamaged
-> [!note]
-> Cette fonction ne renvoie pas la valeur en temps réel, la valeur est mise à jour à chaque fois que le véhicule est synchronisé avec les autres joueurs.
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-local windowsDamaged --[[ table ]] = exports["sadoj-vehicle"]:GetWindowsDamaged(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé des vitres.
-* **Retourne:**
-  * **windowsDamaged:** Tableau contenant la santé des vitres du véhicule.
-### **Export (serveur)**
-```lua
-local windowsDamaged --[[ table ]] = exports["sadoj-vehicle"]:GetWindowsDamaged(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé des vitres.
-* **Retourne:**
-  * **windowsDamaged:** Tableau contenant la santé des vitres du véhicule.
-<!-- tabs:end -->
-
-### GetWindowDamagedByWindowId
-> [!note]
-> Cette fonction ne renvoie pas la valeur en temps réel, la valeur est mise à jour à chaque fois que le véhicule est synchronisé avec les autres joueurs.
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-local doorDamaged --[[ boolean ]] = exports["sadoj-vehicle"]:GetWindowDamagedByWindowId(vehicle --[[ vehicle ]], windowId --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé de la vitre.
-  * **windowId:** L'identifiant de la vitre.
-* **Retourne:**
-  * **doorDamaged:** `true` si la vitre est endommagée, `false` sinon.
-### **Export (serveur)**
-```lua
-local doorDamaged --[[ boolean ]] = exports["sadoj-vehicle"]:GetWindowDamagedByWindowId(vehicle --[[ vehicle ]], windowId --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut récupérer la santé de la vitre.
-  * **windowId:** L'identifiant de la vitre.
-* **Retourne:**
-  * **doorDamaged:** `true` si la vitre est endommagée, `false` sinon.
+  * **vehicle:** le véhicule.
+* **Retour:**
+  * **petrolTankHealth:** la santé du réservoir.
 <!-- tabs:end -->
 
 
-## Application des données
 
-> [!warning]
-> Pour exécuter les fonctions côté client il faut être impérativement propriétaire de l'entité. Vous pouvez utiliser la fonction `NetworkHasControlOfEntity` pour vérifier si vous êtes propriétaire de l'entité.
-
-
-### SetVehicleDamage
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleDamage(vehicle --[[ vehicle ]], damages --[[ table ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut appliquer les dégâts.
-  * **damages:** Tableau contenant les dégâts du véhicule.
-### **Export (serveur)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleDamage(vehicle --[[ vehicle ]], damages --[[ table ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut appliquer les dégâts.
-  * **damages:** Tableau contenant les dégâts du véhicule.
-<!-- tabs:end -->
-
-### SetVehicleEngineHealth
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleEngineHealth(vehicle --[[ vehicle ]], health --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut appliquer la santé du moteur.
-  * **health:** La santé du moteur du véhicule.
-### **Export (serveur)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleEngineHealth(vehicle --[[ vehicle ]], health --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut appliquer la santé du moteur.
-  * **health:** La santé du moteur du véhicule.
-<!-- tabs:end -->
-
-### SetVehicleBodyHealth
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleBodyHealth(vehicle --[[ vehicle ]], health --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut appliquer la santé
-  * **health:** La santé
-### **Export (serveur)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleBodyHealth(vehicle --[[ vehicle ]], health --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut appliquer la santé
-  * **health:** La santé
-<!-- tabs:end -->
-
-### SetVehiclePetrolTankHealth
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-exports["sadoj-vehicle"]:SetVehiclePetrolTankHealth(vehicle --[[ vehicle ]], health --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut appliquer la santé du réservoir de carburant.
-  * **health:** La santé du réservoir.
-### **Export (serveur)**
-```lua
-exports["sadoj-vehicle"]:SetVehiclePetrolTankHealth(vehicle --[[ vehicle ]], health --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut appliquer la santé du réservoir de carburant.
-  * **health:** La santé du réservoir.
-<!-- tabs:end -->
-
-### SetVehicleDeformations
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleDeformations(vehicle --[[ vehicle ]], deformations --[[ table ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut appliquer les déformations.
-  * **deformations:** Tableau contenant les déformations du véhicule.
-### **Export (serveur)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleDeformations(vehicle --[[ vehicle ]], deformations --[[ table ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut appliquer les déformations.
-  * **deformations:** Tableau contenant les déformations du véhicule.
-<!-- tabs:end -->
-
-### SetVehicleWheelsHealth
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleWheelsHealth(vehicle --[[ vehicle ]], wheelsHealth --[[ table ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut appliquer les degats des roues.
-  * **wheelsHealth:** Tableau contenant les des degats des roues.
-### **Export (serveur)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleWheelsHealth(vehicle --[[ vehicle ]], wheelsHealth --[[ table ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule dont on veut appliquer les degats des roues.
-  * **wheelsHealth:** Tableau contenant les des degats des roues.
-<!-- tabs:end -->
-
-### SetVehicleWheelHealth
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleWheelHealth(vehicle --[[ vehicle ]], wheelId --[[ number ]], wheelHealth --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule
-  * **wheelId:** L'Id de la roue
-  * **wheelHealth:** La santé de la roue
-### **Export (serveur)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleWheelHealth(vehicle --[[ vehicle ]], wheelId --[[ number ]], wheelHealth --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule
-  * **wheelId:** L'Id de la roue
-  * **wheelHealth:** La santé de la roue
-<!-- tabs:end -->
-
-### SetVehicleTyresHealth
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleTyresHealth(vehicle --[[ vehicle ]], tyresHealth --[[ table ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule
-  * **tyresHealth:** La santé des pneus
-### **Export (serveur)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleTyresHealth(vehicle --[[ vehicle ]], tyresHealth --[[ table ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule
-  * **tyresHealth:** La santé des pneus
-<!-- tabs:end -->
-
-### SetVehicleTyreHealth
-<!-- tabs:start -->
-### **Export (client)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleTyreHealth(vehicle --[[ vehicle ]], tyreId --[[ number ]], tyreHealth --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule
-  * **tyreId:** L'Id du pneu
-  * **tyreHealth:** La santé du pneu
-### **Export (serveur)**
-```lua
-exports["sadoj-vehicle"]:SetVehicleTyreHealth(vehicle --[[ vehicle ]], tyreId --[[ number ]], tyreHealth --[[ number ]])
-```
-* **Paramètres:**
-  * **vehicle:** Le véhicule
-  * **tyreId:** L'Id du pneu
-  * **tyreHealth:** La santé du pneu
-<!-- tabs:end -->
 
 
 {docsify-updated}
