@@ -20,6 +20,7 @@ Il permet de gérer les dégâts, l'essence, l'huile, les effets, les airbags et
 * [Couleur des lumières](life/dev/framework/sadoj-vehicle/lightsColor.md "Couleur des lumières")
 * [Fenêtres](life/dev/framework/sadoj-vehicle/windows.md "Fenêtres")
 * [Portes](life/dev/framework/sadoj-vehicle/doors.md "Portes")
+* [Roues/Pneus](life/dev/framework/sadoj-vehicle/wheels_tires.md "Roues/Pneus")
 * [Divers](life/dev/framework/sadoj-vehicle/misc.md "Divers")
 * [Autorisation des véhicules locaux](life/dev/framework/sadoj-vehicle/localvehiclepermission.md "Autorisation des véhicules locaux")
 
