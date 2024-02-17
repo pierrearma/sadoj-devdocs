@@ -23,6 +23,7 @@
         * [Timerbars](life/dev/framework/sadoj-ui/timerbars.md "Timerbars")
         * [Divers](life/dev/framework/sadoj-ui/misc.md "Divers")
       * [sadoj-callbacks](life/dev/framework/sadoj-callbacks.md "sadoj-callbacks")
+      * [sadoj-characters](life/dev/framework/sadoj-characters.md "sadoj-characters")
       * [sadoj-inventory](life/dev/framework/sadoj-inventory.md "sadoj-inventory")
       * [sadoj-licenses](life/dev/framework/sadoj-licenses.md "sadoj-licenses")
       * [sadoj-keyboard](life/dev/framework/sadoj-keyboard.md "sadoj-keyboard")
