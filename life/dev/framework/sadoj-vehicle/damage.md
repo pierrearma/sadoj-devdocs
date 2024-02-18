@@ -289,6 +289,45 @@ local petrolTankHealth --[[ number ]] = exports["sadoj-vehicle"]:GetVehiclePetro
 <!-- tabs:end -->
 
 
+# State bags
+
+Chaque dégâts (visuel et mécanique) d'un véhicule est enregistré dans un state bag.
+
+Voici les clés utilisées avec la quelle vous pouvez récupérer le non des "state bags" en utilisant l'export `GetBagName` :
+
+* **Exploded** : si le véhicule est explosé. (type `boolean`)
+* **EngineHealth** : la santé du moteur. (type `number`)  *(**Minimum**: `-4000`, **Maximum:** `1000`)*
+* **BodyHealth** : la santé de la carrosserie. (type `number`)  *(**Minimum**: `0`, **Maximum:** `1000`)*
+* **PetrolTankHealth** : la santé du réservoir. (type `number`)  *(**Minimum**: `0`, **Maximum:** `1000`)*
+* **HeliMainRotorHealth** : la santé du rotor principal (uniquement pour les hélicoptères). (type `number`)  *(**Minimum**: `0`, **Maximum:** `1000`)*
+* **HeliTailRotorHealth** : la santé du rotor arrière (uniquement pour les hélicoptères). (type `number`)  *(**Minimum**: `0`, **Maximum:** `1000`)*
+* **Deformations** : les déformations de la carrosserie. (type `json`)
+
+## Récupérer le nom d'un state bag
+
+<!-- tabs:start -->
+### **Export (client & serveur)**
+```lua
+local bagName --[[ string ]] = exports["sadoj-vehicle"]:GetBagName(key --[[ string ]])
+```
+* **Paramètres:**
+  * **key:** la clé.
+* **Retour:**
+  * **bagName:** le nom du "state bag".
+
+
+Exemple d'utilisation:
+  ```lua
+  AddStateBagChangeHandler(exports["sadoj-vehicle"]:GetBagName("EngineHealth"), nil, function(bagName, key, value)
+      local vehicle = exports["sadoj-core"]:GetEntityFromStateBagName(bagName)
+      if DoesEntityExist(vehicle) then
+          print("Vehicle engine health changed to: " .. value)
+      end
+  end)
+  ```
+<!-- tabs:end -->
+
+
 
 
 
