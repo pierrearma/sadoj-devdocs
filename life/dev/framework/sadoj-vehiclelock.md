@@ -11,13 +11,15 @@
 
 Ce script permet de verrouiller et déverrouiller les véhicules et de gérer la synchronisation entre les clients.
 
+On retrouve également le système de clés qui s'appuie sur l'inventaire des joueurs et sur le lockId (uuid) des véhicules.
+
 Il existe 4 statuts différents:
 - `0`: véhicule déverrouillé
 - `1`: véhicule verrouillé
 - `2`: véhicule bloqué verrouillé (ne peut pas être déverrouillé hors d'un script)
 - `3`: véhicule bloqué déverrouillé (ne peut pas être verrouillé hors d'un script)
 
-## Utilisation
+## Système de verrouillage
 
 ### GetVehicleLockStatus
 
@@ -102,87 +104,101 @@ exports["sadoj-vehiclelock"]:LockAction(vehicle --[[ number ]])
 
 <!-- tabs:end -->
 
+## Système de clés
+
+### GetVehicleLockId
+
+Permet de récupérer le lockId du véhicule.
+
+<!-- tabs:start -->
+
+#### **Export (client & serveur)**
+
+```lua
+local result --[[ string ]] = exports["sadoj-vehiclelock"]:GetVehicleLockId(vehicle --[[ number ]])
+```
+
+* **Paramètres:**
+  * **vehicle:** Véhicule.
+  * **Retourne:**
+    * **result:** LockId du véhicule.
+
+<!-- tabs:end -->
+
 ### AddKeyToPlayer
 
-Permet d'ajouter une clé au joueur. Cela est sauvegardé jusqu'au prochain redémarrage du serveur.
+Permet d'ajouter une clé à l'inventaire du joueur.
 
 <!-- tabs:start -->
 
 #### **Event (client)**
 
 ```lua
-TriggerServerEvent("sadoj-vehiclelock:server:AddKeyToPlayer", vehicleVin --[[ string ]][, playerSrc --[[ number ]]])
+TriggerServerEvent("sadoj-vehiclelock:server:AddKeyToPlayer", vehicleLockId --[[ string ]], itemLabel --[[ string ]][, playerSrc --[[ number ]]])
 ```
 
 * **Paramètres:**
-  * **vehicleVin:** Vin du véhicule.
-  * **playerSrc:** ServerId du joueur (optionnel, par défaut c'est le joueur qui a appelé l'event)
+  * **vehicleLockId:** LockId du véhicule.
+  * **itemLabel:** Nom de l'item (optionnel).
+  * **playerSrc:** ServerId du joueur (optionnel, par défaut c'est le joueur qui a appelé l'event).
 
 #### **Event (serveur)**
 
 ```lua
-TriggerEvent("sadoj-vehiclelock:server:AddKeyToPlayer", vehicleVin --[[ string ]], playerSrc --[[ number ]])
+TriggerEvent("sadoj-vehiclelock:server:AddKeyToPlayer", vehicleLockId --[[ string ]], itemLabel --[[ string ]], playerSrc --[[ number ]])
 ```
 
 * **Paramètres:**
-  * **vehicleVin:** Vin du véhicule.
+  * **vehicleLockId:** LockId du véhicule.
+  * **itemLabel:** Nom de l'item.
   * **playerSrc:** ServerId du joueur.
 
 <!-- tabs:end -->
 
 ### RemoveKeyFromPlayer
 
-Permet de retirer une clé au joueur. Si c'est un véhicule dont le joueur a les clés en base de données, lorsqu'il se reconnectera, il aura les clés.
+Permet de retirer les clés correspondantes au lockId de l'inventaire du joueur.
 
 <!-- tabs:start -->
 
 #### **Event (client)**
 
 ```lua
-TriggerServerEvent("sadoj-vehiclelock:server:RemoveKeyFromPlayer", vehicleVin --[[ string ]][, playerSrc --[[ number ]]])
+TriggerServerEvent("sadoj-vehiclelock:server:RemoveKeyFromPlayer", vehicleLockId --[[ string ]][, playerSrc --[[ number ]]])
 ```
 
 * **Paramètres:**
-  * **vehicleVin:** Vin du véhicule.
+  * **vehicleLockId:** LockId du véhicule.
   * **playerSrc:** ServerId du joueur (optionnel, par défaut c'est le joueur qui a appelé l'event)
 
 #### **Event (serveur)**
 
 ```lua
-TriggerEvent("sadoj-vehiclelock:server:RemoveKeyFromPlayer", vehicleVin --[[ string ]], playerSrc --[[ number ]])
+TriggerEvent("sadoj-vehiclelock:server:RemoveKeyFromPlayer", vehicleLockId --[[ string ]], playerSrc --[[ number ]])
 ```
 
 * **Paramètres:**
-  * **vehicleVin:** Vin du véhicule.
+  * **vehicleLockId:** LockId du véhicule.
   * **playerSrc:** ServerId du joueur.
 
 <!-- tabs:end -->
 
-### ChangeKeyOwner
+### HasKeyOfVehicle
 
-Supprime les clés a tous les joueurs et les ajoute au nouveau propriétaire. Ne fait aucune modification en base de données.
+Permet de savoir si le joueur possède la clé du véhicule dans son inventaire.
 
 <!-- tabs:start -->
 
-#### **Event (client)**
+#### **Export (client)**
 
 ```lua
-TriggerServerEvent("sadoj-vehiclelock:server:ChangeKeyOwner", vehicleVin --[[ string ]], playerSrc --[[ number ]])
+local result --[[ boolean ]] = exports["sadoj-vehiclelock"]:HasKeyOfVehicle(vehicle --[[ number ]])
 ```
 
 * **Paramètres:**
-  * **vehicleVin:** Vin du véhicule.
-  * **playerSrc:** ServerId du joueur qui deviendra le nouveau propriétaire (optionnel, par défaut c'est le joueur qui a appelé l'event).
-
-#### **Event (serveur)**
-
-```lua
-TriggerEvent("sadoj-vehiclelock:server:ChangeKeyOwner", vehicleVin --[[ string ]], playerSrc --[[ number ]])
-```
-
-* **Paramètres:**
-  * **vehicleVin:** Vin du véhicule.
-  * **playerSrc:** ServerId du joueur qui deviendra le nouveau propriétaire.
+  * **vehicle:** Véhicule.
+* **Retourne:**
+    * **result:** Booléen qui indique si le joueur possède la clé du véhicule dans son inventaire.
 
 <!-- tabs:end -->
 
