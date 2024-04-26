@@ -48,10 +48,10 @@ local informations = exports["sadoj-characters"]:GetPlayerCharacterIdentityFromI
 ```
 
 * **Paramètres:**
-    * **identifier:** Identifiant du joueur.
+  * **identifier:** Identifiant du joueur.
 
 * **Résultats:**
-    * **informations:** Informations d'identité du joueur. `nil` si non trouvé.
+  * **informations:** Informations d'identité du joueur. `nil` si non trouvé.
 
 <!-- tabs:end -->
 
@@ -66,7 +66,7 @@ local informations = exports["sadoj-characters"]:GetPlayerCharacterIdentity(play
 ```
 
 * **Paramètres:**
-    * **playerId:** Identifiant serveur du joueur.
+  * **playerId:** Identifiant serveur du joueur.
 
 * **Résultats:**
   * **informations:** Informations d'identité du joueur. `nil` si non trouvé.
@@ -78,10 +78,10 @@ local informations = exports["sadoj-characters"]:GetPlayerCharacterIdentity(?pla
 ```
 
 * **Paramètres:**
-    * **playerId:** Identifiant local du joueur. Si non renseigné, l'identifiant du joueur local sera utilisé.
+  * **playerId:** Identifiant local du joueur. Si non renseigné, l'identifiant du joueur local sera utilisé.
 
 * **Résultats:**
-    * **informations:** Informations d'identité du joueur. `nil` si non trouvé.
+  * **informations:** Informations d'identité du joueur. `nil` si non trouvé.
 
 <!-- tabs:end -->
 
