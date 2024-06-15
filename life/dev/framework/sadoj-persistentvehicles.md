@@ -130,21 +130,21 @@ end)
 #### **Export (serveur)**
 
 ```lua
-exports["sadoj-persistentvehicles"]:RegisterField(GetCurrentResourceName(), name --[[ string ]], function(vehicleIdentifier --[[ string ]], value --[[ table ]])
+  exports["sadoj-persistentvehicles"]:RegisterField(name --[[ string ]], function(vehicleIdentifier --[[ string ]], value --[[ table ]])
 
-end --[[ function ]])
+  end --[[ function ]][, automaticUpdate --[[ boolean ]]])
 ```
 * **Paramètres:**
   * **name:** Le nom du champ.
   * **func:** La fonction qui sera appelée pour récupérer la valeur du champ.
+  * **automaticUpdate:** Si vrai, le champ sera automatiquement mis à jour toutes les 10 secondes. `true` par défaut.
 <!-- tabs:end -->
 
 <!-- tabs:start -->
 #### **Export (serveur)**
 
 ```lua
-exports["sadoj-persistentvehicles"]:RemoveField(name --[[ string ]])
-
+  exports["sadoj-persistentvehicles"]:RemoveField(name --[[ string ]])
 ```
 * **Paramètres:**
   * **name:** Le nom du champ.
@@ -155,11 +155,21 @@ exports["sadoj-persistentvehicles"]:RemoveField(name --[[ string ]])
 #### **Export (serveur)**
 
 ```lua
-exports["sadoj-persistentvehicles"]:FieldIsRegistered(name --[[ string ]])
-
+  exports["sadoj-persistentvehicles"]:FieldIsRegistered(name --[[ string ]])
 ```
 * **Paramètres:**
   * **name:** Le nom du champ.
+<!-- tabs:end -->
+
+<!-- tabs:start -->
+#### **Export (serveur)**
+```lua
+  exports["sadoj-persistentvehicles"]:SetFieldValue(vehicleIdentifier --[[ string ]], name --[[ string ]], value --[[ table ]])
+```
+* **Paramètres:**
+  * **vehicleIdentifier:** L'identifiant du véhicule.
+  * **name:** Le nom du champ.
+  * **value:** La valeur du champ.
 <!-- tabs:end -->
 
 {docsify-updated}
