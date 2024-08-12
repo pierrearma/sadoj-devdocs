@@ -3,6 +3,24 @@
 > Auteur de la page: Thomas.
 
 ---
+## GetVehicleState
+
+Il existe 3 statuts différents:
+- `-1`: Véhicule PNJ aucun joueur n'est jamais monté dedans.
+- `0`: Le véhicule est en cours d'apparition (garage ou persistance).
+- `1`: Le véhicule a apparu correctement, toutes les données ont bien été appliquées.
+
+
+<!-- tabs:start -->
+### **Export (client & serveur)**
+```lua
+local state --[[ string ]] = exports["sadoj-vehicle"]:GetVehicleState(vehicle --[[ vehicle ]])
+```
+* **Paramètres:**
+  * **vehicle:** le véhicule.
+* **Retour:**
+  * **state:** l'état du véhicule.
+<!-- tabs:end -->
 
 ## VehicleIsRegister
 <!-- tabs:start -->
