@@ -49,7 +49,6 @@
       * [sadoj-turfwars](life/dev/framework/sadoj-turfwars.md "sadoj-turfwars")
       * [sadoj-cayoperico](life/dev/framework/sadoj-cayoperico.md "sadoj-cayoperico")
       * [sadoj-dark](life/dev/framework/sadoj-dark.md "sadoj-dark")
-      * [sadoj-npwd](life/dev/framework/sadoj-npwd.md "sadoj-npwd")
       * [pmms](life/dev/framework/pmms.md "pmms")
       * [sadoj-vehiclecustom](life/dev/framework/sadoj-vehiclecustom.md "sadoj-vehiclecustom")
       * [sadoj-misc](life/dev/framework/sadoj-misc.md "sadoj-misc")
@@ -62,6 +61,7 @@
       * [sadoj-handcuffs](life/dev/framework/sadoj-handcuffs.md "sadoj-handcuffs")
       * [sadoj-weapon](life/dev/framework/sadoj-weapon.md "sadoj-weapon")
       * [sadoj-discord](life/dev/framework/sadoj-discord.md "sadoj-discord")
+      * [sadoj-quotas](life/dev/framework/sadoj-quotas.md "sadoj-quotas")
     * Tutoriels
       * [Formattage du texte](https://wiki.rage.mp/index.php?title=Fonts_and_Colors "Formattage du texte")
       * [Whitelist](life/dev/tutorials/whitelist.md "Whitelist")
