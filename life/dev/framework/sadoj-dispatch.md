@@ -113,11 +113,78 @@
 
 ### Récupération des données
 
-SOON
+#### Récupérer la liste des centrales
+<!-- tabs:start -->
+#### **Export (client & serveur)**
+```lua
+  local centrals = exports["sadoj-dispatch"]:GetCentrals()
+```
+* **Retour:**
+  * **centrals:** La liste des centrales.
+<!-- tabs:end -->
+
+#### Récupérer le nombre de personnes connectées à une centrale
+<!-- tabs:start -->
+#### **Export (client & serveur)**
+```lua
+  local count = exports["sadoj-dispatch"]:GetNumberOfConnectedPlayerInCentral(central --[[ string ]])
+```
+* **Paramètres:**
+  * **central:** La centrale à vérifier.
+* **Retour:**
+  * **count:** Le nombre de personnes connectées à la centrale.
+<!-- tabs:end -->
+
+#### Récupérer le nombre de personnes disponibles dans une centrale
+<!-- tabs:start -->
+#### **Export (client & serveur)**
+```lua
+  local count = exports["sadoj-dispatch"]:GetNumberOfAvailablePlayerInCentral(central --[[ string ]])
+```
+* **Paramètres:**
+  * **central:** La centrale à vérifier.
+* **Retour:**
+  * **count:** Le nombre de personnes disponibles dans la centrale.
+<!-- tabs:end -->
+
+#### Récupérer toutes les centrales auxquelles un joueur est connecté
+<!-- tabs:start -->
+#### **Export (client & serveur)**
+```lua
+  local centrals = exports["sadoj-dispatch"]:GetPlayerConnectedCentrals(player --[[ player ]])
+```
+* **Paramètres:**
+  * **player:** Le joueur à vérifier.
+* **Retour:**
+  * **centrals:** La liste des centrales auxquelles le joueur est connecté.
+<!-- tabs:end -->
+
+#### Récupérer tout les joueurs connectés à une centrale
+<!-- tabs:start -->
+#### **Export (client & serveur)**
+```lua
+  local players = exports["sadoj-dispatch"]:GetAllPlayersConnectedToCentral(central --[[ string ]])
+```
+* **Paramètres:**
+  * **central:** La centrale à vérifier.
+* **Retour:**
+  * **players:** La liste des joueurs connectés à la centrale.
+<!-- tabs:end -->
 
 ### Autre
 
-SOON
+#### Envoyer un event à toutes les personnes connectées à une centrale
+<!-- tabs:start -->
+#### **Export (serveur)**
+```lua
+  exports["sadoj-dispatch"]:TriggerClientEventToAllPlayersConnectedToCentral(central --[[ string ]], event --[[ string ]], ...)
+```
+* **Paramètres:**
+  * **central:** La centrale à vérifier.
+  * **event:** L'événement à envoyer.
+  * **...:** Les arguments à envoyer.
+<!-- tabs:end -->
+
 
 
 ### Événement d'écoute
@@ -156,6 +223,26 @@ SOON
 #### **Event (serveur)**
 ```lua
   RegisterServerEvent("sadoj-dispatch:OnPlayerDisconnectFromCentral", function(serverId --[[ integer ]], central --[[ string ]])
+
+    --Mettez votre code ici
+
+  end)
+```
+<!-- tabs:end -->
+
+#### Changement de statut d'une centrale sur un appel
+<!-- tabs:start -->
+#### **Event (client)**
+```lua
+  RegisterNetEvent("sadoj-dispatch:OnCentralCallStateChange", function(callId --[[ integer ]], central --[[ string ]], state --[[ string ]])
+
+    --Mettez votre code ici
+
+  end)
+```
+#### **Event (serveur)**
+```lua
+  RegisterServerEvent("sadoj-dispatch:OnCentralCallStateChange", function(callId --[[ integer ]], central --[[ string ]], state --[[ string ]])
 
     --Mettez votre code ici
 
