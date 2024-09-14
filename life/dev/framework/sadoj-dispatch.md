@@ -10,6 +10,14 @@
 * Emplacement: `[SCRIPT]/[BASE]/sadoj-dispatch`
 * Redémarrage possible: `Non`
 
+Un appel à différents statuts:
+- `1`: En attente
+- `2`: Unité en route
+- `3`: Unité sur place
+- `4`: Fini
+- `5`: Aucune unité disponible
+- `6`: Aucune unité connectée
+
 ## Utilisation
 
 ### Faire appel à une centrale
