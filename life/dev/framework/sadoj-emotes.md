@@ -46,4 +46,60 @@
 <!-- tabs:end -->
 
 
+### MovementClipset
+
+#### Verrouiller le movementClipset
+<!-- tabs:start -->
+### **Event (client)**
+```lua
+  local token --[[ string ]] = exports["sadoj-emotes"]:LockMovementClipset()
+```
+* **Retourne:**
+  * **token:** Le token pour déverrouiller le movementClipset.
+<!-- tabs:end -->
+
+#### Déverrouiller le movementClipset
+<!-- tabs:start -->
+### **Event (client)**
+```lua
+  exports["sadoj-emotes"]:UnlockMovementClipset(token --[[ string ]])
+```
+* **Paramètres:**
+  * **token:** Le token pour retrouné par la fonction `LockMovementClipset`.
+<!-- tabs:end -->
+
+
+### Ragdoll
+
+#### Verrouiller le ragdoll
+<!-- tabs:start -->
+### **Event (client)**
+```lua
+  local token --[[ string ]] = exports["sadoj-emotes"]:LockRagdoll()
+```
+* **Retourne:**
+  * **token:** Le token pour déverrouiller le ragdoll.
+<!-- tabs:end -->
+
+#### Déverrouiller le ragdoll
+<!-- tabs:start -->
+### **Event (client)**
+```lua
+  exports["sadoj-emotes"]:UnlockRagdoll(token --[[ string ]])
+```
+* **Paramètres:**
+  * **token:** Le token pour retrouné par la fonction `LockRagdoll`.
+<!-- tabs:end -->
+
+#### Savoir si le joueur peut ragdoll
+<!-- tabs:start -->
+### **Export (client)**
+```lua
+  local canRagdoll --[[ boolean ]] = exports["sadoj-emotes"]:CanRagdoll()
+```
+* **Retourne:**
+  * **canRagdoll:** `flase` si le joueur ne peut pas ragdoll, `true` sinon.
+<!-- tabs:end -->
+
+
 {docsify-updated}
