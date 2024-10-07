@@ -18,6 +18,11 @@ Un appel à différents statuts:
 - `5`: Aucune unité disponible
 - `6`: Aucune unité connectée
 
+Quand une centrale est liée à un appel, les options suivantes peuvent être passées:
+- `responseType`: Le type de réponse attendue (Code 2, Code 3, ...). Par défaut: `nil`. (Uniquement pour les services de secours)
+- `soundName`: Le nom du son à jouer. Par défaut: `nil`.
+- `callType`: Le type de l'appel. Par défaut: `nil`. Par exemple: `backup`, `carjacking`, `stolen_vehicle`, `fire`.
+
 ## Utilisation
 
 ### Faire appel à une centrale
