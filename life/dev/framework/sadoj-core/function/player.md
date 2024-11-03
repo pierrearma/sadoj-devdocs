@@ -49,6 +49,26 @@ local identifier --[[ string ]] = exports["sadoj-core"]:GetPlayerIdentifier(play
 
 <!-- tabs:end -->
 
+
+#### GetPlayerIdentifierByType
+
+<!-- tabs:start -->
+
+#### **Export (client)**
+
+```lua
+local identifier --[[ string ]] = exports["sadoj-core"]:GetPlayerIdentifierByType(playerId --[[ Integer ]], identifierType --[[ string ]])
+```
+
+* **Paramètres:**
+  * **playerId:** Le joueur (pas le Server Id).
+  * **identifierType:** Le type d'identifiant à récupérer.
+* **Retour:**
+  * **identifier:** L'identifiant du joueur.
+
+<!-- tabs:end -->
+
+
 #### GetAllPlayers
 
 <!-- tabs:start -->
