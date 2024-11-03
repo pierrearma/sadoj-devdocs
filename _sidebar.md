@@ -12,6 +12,7 @@
           * [Streaming](life/dev/framework/sadoj-core/function/streaming.md "Streaming")
           * [Débogage](life/dev/framework/sadoj-core/function/debug.md "Débogage")
           * [Webhook](life/dev/framework/sadoj-core/function/webhook.md "Webhook")
+          * [Tableau](life/dev/framework/sadoj-core/function/table.md "Tableau")
           * [Divers](life/dev/framework/sadoj-core/function/misc.md "Divers")
         * [Événements](life/dev/framework/sadoj-core/events/index.md "Événements")
           * [Joueur](life/dev/framework/sadoj-core/events/player.md "Joueur")

@@ -160,32 +160,6 @@ local result --[[ number ]] = exports["sadoj-core"]:ToBoolean(value --[[ number 
   * **result:** La valeur sous forme d'un boolean.
 <!-- tabs:end -->
 
-#### Tablelength
-<!-- tabs:start -->
-#### **Export (client)**
-
-```lua
-local result --[[ number ]] = exports["sadoj-core"]:Tablelength(table --[[ table ]])
-```
-
-* **Paramètres:**
-  * **table:** La table que vous souhaitez compter.
-* **Retour:**
-  * **result:** Le nombre d'éléments dans la table.
-
-#### **Export (serveur)**
-
-```lua
-local result --[[ number ]] = exports["sadoj-core"]:Tablelength(table --[[ table ]])
-```
-
-* **Paramètres:**
-  * **table:** La table que vous souhaitez compter.
-* **Retour:**
-  * **result:** Le nombre d'éléments dans la table.
-<!-- tabs:end -->
-
-
 #### IsADevServer
 <!-- tabs:start -->
 #### **Export (client)**
@@ -296,35 +270,6 @@ local result --[[ boolean ]] = exports["sadoj-core"]:StringIsAUuid(str --[[ stri
   * **result:** `true` si la chaîne de caractères est un UUID, `false` sinon.
 <!-- tabs:end -->
 
-#### TableContainsValue
-<!-- tabs:start -->
-#### **Export (client & serveur)**
-
-```lua
-local result --[[ boolean ]] = exports["sadoj-core"]:TableContainsValue(table --[[ table ]], value --[[ any ]])
-```
-
-* **Paramètres:**
-  * **table:** La table à vérifier.
-  * **value:** La valeur à vérifier.
-* **Retour:**
-  * **result:** `true` si la table contient la valeur, `false` sinon.
-<!-- tabs:end -->
-
-#### TableRemoveValue
-<!-- tabs:start -->
-#### **Export (client & serveur)**
-
-```lua
-local result --[[ boolean ]] = exports["sadoj-core"]:TableRemoveValue(table --[[ table ]], value --[[ any ]])
-```
-
-* **Paramètres:**
-  * **table:** La table à modifier.
-  * **value:** La valeur à supprimer.
-* **Retour:**
-  * **result:** `true` si la valeur a été supprimée, `false` sinon.
-<!-- tabs:end -->
 
 
 

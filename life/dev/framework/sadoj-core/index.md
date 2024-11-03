@@ -19,6 +19,7 @@ Ce script regroupe la majorité des fonctions du framework et permet de fournir 
 * [Streaming](life/dev/framework/sadoj-core/function/streaming.md)
 * [Débogage](life/dev/framework/sadoj-core/function/debug.md "Débogage")
 * [Webhook](life/dev/framework/sadoj-core/function/webhook.md "Webhook")
+* [Tableau](life/dev/framework/sadoj-core/function/table.md "Tableau")
 * [Divers](life/dev/framework/sadoj-core/function/misc.md "Divers")
 
 ## Événements
