@@ -29,4 +29,3 @@ local isInSafeZone --[[ boolean ]], safeZoneType --[[ integer ]], zoneData --[[ 
 
 <!-- tabs:end -->
 
-{docsify-updated}

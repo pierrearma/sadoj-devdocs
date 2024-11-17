@@ -161,5 +161,3 @@ TriggerServerEvent("sadoj-core:server:ped:SetBlockingOfNonTemporaryEvents", pedN
   * **toggle:** Si `true`, le ped bloquera les événements.
 <!-- tabs:end -->
 
-
-{docsify-updated}

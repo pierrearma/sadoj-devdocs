@@ -375,4 +375,3 @@ exports["sadoj-licenses"]:RemovePlayerLicenseMetadata(player --[[ number or stri
   * **metadataKey:** La clé de la métadonnée.
 <!-- tabs:end -->
 
-{docsify-updated}

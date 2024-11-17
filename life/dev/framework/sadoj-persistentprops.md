@@ -137,4 +137,3 @@ local result --[[ number ]] = exports["sadoj-persistentprops"]:GetPropNetIdByInd
   * **result:** NetId du props.
 <!-- tabs:end -->
 
-{docsify-updated}

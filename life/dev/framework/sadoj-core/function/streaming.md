@@ -78,5 +78,3 @@ exports["sadoj-core"]:LoadStreamedTextureDict(dict --[[ string ]])
     * **dict:** Le nom du dictionnaire à charger.
 
 <!-- tabs:end -->
-
-{docsify-updated}

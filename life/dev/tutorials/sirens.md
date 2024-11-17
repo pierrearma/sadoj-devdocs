@@ -57,4 +57,3 @@
 
 13. Renvoyez le dossier `sadoj-sirens-source` à un développeur. (Chemin : `SERVEUR/Life_US_Dev_2/ServerData/resources/[UNIQUEDEV]/sadoj-sirens-source`)
 
-{docsify-updated}

@@ -26,4 +26,3 @@ Il permet de gérer les dégâts, l'essence, l'huile, les effets, les airbags et
 * [Autorisation des véhicules locaux](life/dev/framework/sadoj-vehicle/localvehiclepermission.md "Autorisation des véhicules locaux")
 
 
-{docsify-updated}

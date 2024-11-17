@@ -23,4 +23,3 @@ exports["sadoj-core"]:tPrint(tbl --[[ table ]])
 
 <!-- tabs:end -->
 
-{docsify-updated}

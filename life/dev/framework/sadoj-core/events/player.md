@@ -244,5 +244,3 @@ RegisterNetEvent("sadoj-core:playerLeftScope", function(serverId)
 end)
 ```
 <!-- tabs:end -->
-
-{docsify-updated}

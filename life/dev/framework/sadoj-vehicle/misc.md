@@ -87,4 +87,3 @@ local isValide --[[ boolean ]] = exports["sadoj-vehicle"]:VehicleCertificateDate
   * **isValide:** `true` si la date du certificat est valide, `false` sinon.
 <!-- tabs:end -->
 
-{docsify-updated}

@@ -178,5 +178,3 @@ Ajouter la ligne ci-dessous dans le F7 que vous souhaitez.
 ```lua
     Menu.addButton("nom du bouton ici", "MotionDetectorWirelessDisabledAlarme", {"nom de votre alarme", "type de votre alarme"})
 ```
-
-{docsify-updated}

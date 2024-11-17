@@ -172,4 +172,3 @@ end)
   * **value:** La valeur du champ.
 <!-- tabs:end -->
 
-{docsify-updated}

@@ -170,5 +170,3 @@ La couleur par défaut sera le noir, d'où l'inutilité du champ `required`.
   step = 60 --[[ number ]] -- Facultatif. Le pas (en secondes) à utiliser pour l'incrément quand on utilise les boutons d'augmentation/diminution. Cet incrément est également utilisé pour la validation. 60 par défaut.
 }
 ```
-
-{docsify-updated}

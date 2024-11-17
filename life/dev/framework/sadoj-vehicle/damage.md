@@ -331,4 +331,3 @@ Exemple d'utilisation:
 
 
 
-{docsify-updated}

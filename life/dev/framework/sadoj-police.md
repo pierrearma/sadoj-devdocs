@@ -102,4 +102,3 @@ local result --[[ boolean ]] = exports["sadoj-police"]:IsEntityIsInChase(ped  --
 
 <!-- tabs:end -->
 
-{docsify-updated}

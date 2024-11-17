@@ -117,4 +117,3 @@ TriggerEvent("sadoj-core:SetEntityDistanceCullingRadius", netId --[[ integer ]],
   * **radius:** Le nouveau culling radius (0.0 pour réinitialiser).
 <!-- tabs:end -->
 
-{docsify-updated}

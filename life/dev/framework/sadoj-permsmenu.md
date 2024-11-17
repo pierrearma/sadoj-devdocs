@@ -50,5 +50,3 @@
 * **Retourne:**
   * **hasPerm:** `true` si le joueur a une des permissions, `false` sinon.
 <!-- tabs:end -->
-
-{docsify-updated}

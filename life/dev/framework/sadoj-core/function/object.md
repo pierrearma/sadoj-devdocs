@@ -104,5 +104,3 @@ TriggerServerEvent("sadoj-core:server:object:SetDisableFragDamage", netId --[[ i
 <!-- tabs:end -->
 
 
-
-{docsify-updated}

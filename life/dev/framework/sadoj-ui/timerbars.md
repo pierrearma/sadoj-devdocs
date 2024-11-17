@@ -426,4 +426,3 @@ exports["sadoj-ui"]:SetTimerBarAllCheckpointsState(barId --[[ string ]], state -
 
 <!-- tabs:end -->
 
-{docsify-updated}

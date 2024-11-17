@@ -191,4 +191,3 @@ exports["sadoj-garages"]:RemoveFunctionBeforeVehicleStoring(id --[[ integer ]])
   * **id:** L'identifiant de la fonction.
 <!-- tabs:end -->
 
-{docsify-updated}

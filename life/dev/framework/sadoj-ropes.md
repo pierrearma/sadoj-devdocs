@@ -120,4 +120,3 @@ exports["sadoj-ropes"]:AttachEntitiesToRope(identifier --[[ string ]], entity1 -
 >  ```
 
 
-{docsify-updated}

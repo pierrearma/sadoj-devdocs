@@ -54,5 +54,3 @@
 * [docsify-plugin-title](https://github.com/Sujaykumarh/docsify-plugin-title)
 
 [Retrouve ici la liste des extensions listées sur Docsify.](https://docsify.js.org/#/awesome?id=plugins)
-
-{docsify-updated}

@@ -87,4 +87,3 @@
 3. Vous pouvez maintenant utiliser Visual Studio Code pour modifier les fichiers sur votre serveur WebDAV.
 
 
-{docsify-updated}

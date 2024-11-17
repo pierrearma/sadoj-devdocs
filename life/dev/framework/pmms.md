@@ -191,5 +191,3 @@ Commence à jouer quelque chose sur un écran.
 * **Paramètres:**
   * **handle:**
 <!-- tabs:end -->
-
-{docsify-updated}

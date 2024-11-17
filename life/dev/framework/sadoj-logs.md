@@ -92,5 +92,3 @@ Ce script permet d'enregistrer des logs dans des fichiers. Le script crée autom
   -- Ligne: 2021-01-01 00:00:00; _Thomas_;
 ```
 <!-- tabs:end -->
-
-{docsify-updated}

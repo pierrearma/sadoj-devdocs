@@ -62,4 +62,3 @@ exports["sadoj-vehicle"]:SetVehicleNeonLightsColour(vehicle --[[ vehicle ]], rgb
   * **rgb:** la couleur en RGB. Exemple: `{r = 255, g = 255, b = 255}` pour du blanc.
 <!-- tabs:end -->
 
-{docsify-updated}

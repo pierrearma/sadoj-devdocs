@@ -26,5 +26,3 @@
   * **weaponObject:** Weapon object.
 <!-- tabs:end -->
 
-
-{docsify-updated}

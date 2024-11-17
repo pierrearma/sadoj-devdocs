@@ -183,5 +183,3 @@ exports["sadoj-core"]:Teleport(coords --[[ vector3 ]], heading --[[ number ]], c
   * **canTeleportVehicle:** Peut-on téléporter un véhicule?
 
 <!-- tabs:end -->
-
-{docsify-updated}

@@ -40,5 +40,3 @@ Nous avons besoin du steamID64 en héxadécimal. Pour ce faire utilisez [BinaryH
 7. Insérer le steamID64 dans la colonne `identifier`.
 
 Bravo ! C'est terminé.
-
-{docsify-updated}

@@ -62,4 +62,3 @@ local airbagsIsActive --[[ boolean ]] = exports["sadoj-vehicle"]:IsVehicleAirbag
   * **airbagsIsActive:** `true` si les airbags du véhicule sont activés, `false` sinon.
 <!-- tabs:end -->
 
-{docsify-updated}

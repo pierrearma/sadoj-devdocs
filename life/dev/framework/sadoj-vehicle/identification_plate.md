@@ -90,4 +90,3 @@ exports["sadoj-vehicle"]:SetVehiclePlate(vehicle --[[ vehicle ]], plate --[[ str
   * **plate:** la plaque du véhicule.
 <!-- tabs:end -->
 
-{docsify-updated}

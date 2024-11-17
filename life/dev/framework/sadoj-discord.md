@@ -29,5 +29,3 @@
   local user = exports["sadoj-discord"]:GetUserByDiscordId(discordId --[[ string ]])
 ```
 <!-- tabs:end -->
-
-{docsify-updated}

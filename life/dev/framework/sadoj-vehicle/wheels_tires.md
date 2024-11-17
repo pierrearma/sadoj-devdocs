@@ -170,4 +170,3 @@ exports["sadoj-vehicle"]:FixVehicleTyre(vehicle --[[ vehicle ]], wheelIndex --[[
 
 
 
-{docsify-updated}

@@ -12,5 +12,3 @@
     ```
 3. Cloner le dépôt git.
 4. Faire la commande `docsify serve` pour lancer le site localement.
-
-{docsify-updated}

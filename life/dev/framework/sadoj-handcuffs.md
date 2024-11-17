@@ -29,5 +29,3 @@
 <!-- tabs:end -->
 
 
-
-{docsify-updated}

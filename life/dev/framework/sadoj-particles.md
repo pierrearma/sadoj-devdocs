@@ -369,4 +369,3 @@ exports["sadoj-particles"]:StartParticleFxLoopedOnEntityBone(fxAsset --[[ string
   * **axis:** Axe de la particule.
 <!-- tabs:end -->
 
-{docsify-updated}

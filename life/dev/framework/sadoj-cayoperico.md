@@ -87,4 +87,3 @@ TriggerClientEvent("DisableCayoPerico", serverId --[[ number ]])
 
 <!-- tabs:end -->
 
-{docsify-updated}

@@ -8,4 +8,3 @@
 
 * [Joueur](life/dev/framework/sadoj-core/events/player.md)
 
-{docsify-updated}

@@ -39,4 +39,3 @@ local isAuthorized --[[ boolean ]] = exports["sadoj-vehicle"]:LocalVehicleIsAuth
   * **isAuthorized:** `true` si le véhicule est autorisé, `false` sinon.
 <!-- tabs:end -->
 
-{docsify-updated}

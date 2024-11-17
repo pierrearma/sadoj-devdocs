@@ -101,5 +101,3 @@
   * **canRagdoll:** `flase` si le joueur ne peut pas ragdoll, `true` sinon.
 <!-- tabs:end -->
 
-
-{docsify-updated}

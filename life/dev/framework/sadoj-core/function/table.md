@@ -96,5 +96,3 @@ local result --[[ table ]] = exports["sadoj-core"]:TableSlice(table --[[ table ]
   * **result:** La table découpée.
 <!-- tabs:end -->
 
-
-{docsify-updated}

@@ -95,4 +95,3 @@ TriggerServerEvent("sadoj-turfwars:server:AddPointsForAllFromCoordsOnRadius", co
 
 <!-- tabs:end -->
 
-{docsify-updated}

@@ -201,5 +201,3 @@ local result --[[ boolean ]] = exports["sadoj-vehiclelock"]:HasKeyOfVehicle(vehi
     * **result:** Booléen qui indique si le joueur possède la clé du véhicule dans son inventaire.
 
 <!-- tabs:end -->
-
-{docsify-updated}

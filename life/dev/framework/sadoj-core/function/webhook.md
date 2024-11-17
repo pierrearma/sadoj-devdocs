@@ -67,5 +67,3 @@ local data = {
   }
 }
 ```
-
-{docsify-updated}

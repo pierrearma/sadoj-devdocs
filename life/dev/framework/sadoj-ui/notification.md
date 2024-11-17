@@ -389,4 +389,3 @@ TriggerClientEvent("sadoj-ui:client:ShowPedHeadshotNotificationWithTextEntry", s
 8. RP Icon
 9. $ Icon
 
-{docsify-updated}

@@ -166,4 +166,3 @@ local result --[[ Vehicle ]] = exports["sadoj-core"]:GetVehicleInFrontOfPed(ped 
 
 <!-- tabs:end -->
 
-{docsify-updated}

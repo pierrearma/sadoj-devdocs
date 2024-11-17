@@ -26,4 +26,3 @@ Ce script regroupe la majorité des fonctions du framework et permet de fournir 
 
 * [Joueur](life/dev/framework/sadoj-core/events/player.md "Joueur")
 
-{docsify-updated}

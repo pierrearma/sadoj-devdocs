@@ -263,4 +263,3 @@ Quand une centrale est liée à un appel, les options suivantes peuvent être pa
 ```
 <!-- tabs:end -->
 
-{docsify-updated}

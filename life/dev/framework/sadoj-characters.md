@@ -85,4 +85,3 @@ local informations = exports["sadoj-characters"]:GetPlayerCharacterIdentity(?pla
 
 <!-- tabs:end -->
 
-{docsify-updated}

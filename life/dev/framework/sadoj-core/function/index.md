@@ -16,4 +16,3 @@
 * [Webhook](life/dev/framework/sadoj-core/function/webhook.md)
 * [Divers](life/dev/framework/sadoj-core/function/misc.md)
 
-{docsify-updated}

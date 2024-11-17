@@ -33,4 +33,3 @@ Une `entryKey` est ainsi associée à un texte.
 Dans ce texte, il est possible de mettre des `~a~` pour signifier qu'il y a un paramètre à cet endroit.
 Il est possible ensuite de mettre une chaine de caractères variable à l'endroit des paramètres.
 
-{docsify-updated}

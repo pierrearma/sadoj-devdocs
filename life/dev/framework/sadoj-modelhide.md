@@ -74,4 +74,3 @@ exports["sadoj-modelhide"]:RemoveModelHide(coords --[[ vector3 ]], model --[[ st
   * **radius:** Le rayon de la zone où le modèle doit être caché.
 <!-- tabs:end -->
 
-{docsify-updated}
