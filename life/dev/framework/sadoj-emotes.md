@@ -101,3 +101,24 @@
   * **canRagdoll:** `flase` si le joueur ne peut pas ragdoll, `true` sinon.
 <!-- tabs:end -->
 
+### OpenDoorArmIK
+
+#### Bloquer l'animation d'ouverture de porte
+<!-- tabs:start -->
+### **Event (client)**
+```lua
+  local token --[[ string ]] = exports["sadoj-emotes"]:LockOpenDoorArmIK()
+```
+* **Retourne:**
+  * **token:** Le token pour déverrouiller l'animation d'ouverture de porte.
+<!-- tabs:end -->
+
+#### Débloquer l'animation d'ouverture de porte
+<!-- tabs:start -->
+### **Event (client)**
+```lua
+  exports["sadoj-emotes"]:UnlockOpenDoorArmIK(token --[[ string ]])
+```
+* **Paramètres:**
+  * **token:** Le token pour retrouné par la fonction `LockOpenDoorArmIK`.
+<!-- tabs:end -->
