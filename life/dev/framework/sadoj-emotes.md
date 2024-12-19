@@ -122,3 +122,39 @@
 * **Paramètres:**
   * **token:** Le token pour retrouné par la fonction `LockOpenDoorArmIK`.
 <!-- tabs:end -->
+
+
+### Savoir si le joueur est en position allongé
+<!-- tabs:start -->
+### **Export (client)**
+```lua
+  local isProne --[[ boolean ]] = exports["sadoj-emotes"]:IsPlayerProne()
+```
+* **Retourne:**
+  * **isProne:** `true` si le joueur est en position allongé, `false` sinon.
+<!-- tabs:end -->
+
+
+### Savoir si le joueur est en train de ramper
+<!-- tabs:start -->
+### **Export (client)**
+```lua
+  local isCrawling --[[ boolean ]] = exports["sadoj-emotes"]:IsPlayerCrawling()
+```
+* **Retourne:**
+  * **isCrawling:** `true` si le joueur se déplace en rampant, `false` sinon.
+<!-- tabs:end -->
+
+### Savoir si le joueur est accroupi
+<!-- tabs:start -->
+### **Export (client)**
+```lua
+  local isCrouched --[[ boolean ]] = exports["sadoj-emotes"]:IsPlayerCrouched()
+```
+* **Retourne:**
+  * **isCrouched:** `true` si le joueur est accroupi, `false` sinon.
+<!-- tabs:end -->
+
+
+
+
