@@ -24,5 +24,5 @@ Il permet de gérer les dégâts, l'essence, l'huile, les effets, les airbags et
 * [Dégâts](life/dev/framework/sadoj-vehicle/damage.md "Dégâts")
 * [Divers](life/dev/framework/sadoj-vehicle/misc.md "Divers")
 * [Autorisation des véhicules locaux](life/dev/framework/sadoj-vehicle/localvehiclepermission.md "Autorisation des véhicules locaux")
-
+* [Propriétaire](life/dev/framework/sadoj-vehicle/owner.md "Propriétaire")
 

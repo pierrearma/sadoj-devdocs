@@ -41,6 +41,7 @@
         * [Dégâts](life/dev/framework/sadoj-vehicle/damage.md "Dégâts")
         * [Divers](life/dev/framework/sadoj-vehicle/misc.md "Divers")
         * [Autorisation des véhicules locaux](life/dev/framework/sadoj-vehicle/localvehiclepermission.md "Autorisation des véhicules locaux")
+        * [Propriétaire](life/dev/framework/sadoj-vehicle/owner.md "Propriétaire")
       * [sadoj-dispatch](life/dev/framework/sadoj-dispatch.md "sadoj-dispatch")
       * [Mini-jeux](life/dev/framework/minigames.md "Mini-jeux")
       * [sadoj-persistentprops](life/dev/framework/sadoj-persistentprops.md "sadoj-persistentprops")
