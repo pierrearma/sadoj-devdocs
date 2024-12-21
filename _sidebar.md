@@ -65,6 +65,7 @@
       * [sadoj-discord](life/dev/framework/sadoj-discord.md "sadoj-discord")
       * [sadoj-quotas](life/dev/framework/sadoj-quotas.md "sadoj-quotas")
       * [sadoj-permsmenu](life/dev/framework/sadoj-permsmenu.md "sadoj-permsmenu")
+      * [sadoj-metabolism](life/dev/framework/sadoj-metabolism.md "sadoj-metabolism")
     * Tutoriels
       * [Formattage du texte](https://wiki.rage.mp/index.php?title=Fonts_and_Colors "Formattage du texte")
       * [Whitelist](life/dev/tutorials/whitelist.md "Whitelist")
