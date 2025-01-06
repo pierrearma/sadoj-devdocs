@@ -135,23 +135,23 @@ local result --[[ boolean ]] = exports["sadoj-jobs"]:IsPlayerHasJob(playerSrc --
 ### **Export (client)**
 
 ```lua
-local result --[[ boolean ]] = exports["sadoj-jobs"]:HasAnyJob(list --[[ table<string, string> ]])
+local result --[[ boolean ]] = exports["sadoj-jobs"]:HasAnyJob(list --[[ table<string, table<string> ]])
 ```
 
 * **Paramètres:**
-  * **list:** Tableau associatif des postes. La clé est l'identifiant de la structure et la valeur est l'identifiant du poste.
+  * **list:** Tableau associatif des postes. La clé est l'identifiant de la structure et la valeur est la liste des identifiants des postes.
 * **Retour:**
   * **result:** `true` si le joueur est dans l'un des postes, `false` sinon.
 
 ### **Export (serveur)**
 
 ```lua
-local result --[[ boolean ]] = exports["sadoj-jobs"]:IsPlayerHasAnyJob(playerSrc --[[ number ]], list --[[ table<string, string> ]])
+local result --[[ boolean ]] = exports["sadoj-jobs"]:IsPlayerHasAnyJob(playerSrc --[[ number ]], list --[[ table<string, table<string> ]])
 ```
 
 * **Paramètres:**
   * **playerSrc:** Identifiant serveur du joueur.
-  * **list:** Tableau associatif des postes. La clé est l'identifiant de la structure et la valeur est l'identifiant du poste.
+  * **list:** Tableau associatif des postes. La clé est l'identifiant de la structure et la valeur est la liste des identifiants des postes.
 * **Retour:**
   * **result:** `true` si le joueur est dans l'un des postes, `false` sinon.
 
