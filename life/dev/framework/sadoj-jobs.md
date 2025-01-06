@@ -135,7 +135,7 @@ local result --[[ boolean ]] = exports["sadoj-jobs"]:IsPlayerHasJob(playerSrc --
 ### **Export (client)**
 
 ```lua
-local result --[[ boolean ]] = exports["sadoj-jobs"]:HasAnyJob(list --[[ table<string, table<string> ]])
+local result --[[ boolean ]] = exports["sadoj-jobs"]:HasAnyJob(list --[[ table<string, table<string>> ]])
 ```
 
 * **Paramètres:**
@@ -146,7 +146,7 @@ local result --[[ boolean ]] = exports["sadoj-jobs"]:HasAnyJob(list --[[ table<s
 ### **Export (serveur)**
 
 ```lua
-local result --[[ boolean ]] = exports["sadoj-jobs"]:IsPlayerHasAnyJob(playerSrc --[[ number ]], list --[[ table<string, table<string> ]])
+local result --[[ boolean ]] = exports["sadoj-jobs"]:IsPlayerHasAnyJob(playerSrc --[[ number ]], list --[[ table<string, table<string>> ]])
 ```
 
 * **Paramètres:**
