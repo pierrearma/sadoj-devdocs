@@ -23,7 +23,8 @@ La Liste des options disponibles pour les sons:
 - `loop` (facultatif): Si le son doit se jouer en boucle. (type `boolean`) (**Par défaut**: `false`)
 - `muted` (facultatif): Si le son doit être joué en sourdine. (type `boolean`) (**Par défaut**: `false`)
 - `unLoadOnFinish` (facultatif): Si le son doit être supprimé de la mémoire une fois terminé. (type `boolean`) (**Par défaut**: `true`)
-- `syncSoundWithSetting` (facultatif): Si le son doit être synchronisé avec le volume du jeu. (type `boolean`) (**Par défaut**: `false`)
+- `syncSoundWithSetting` (facultatif): Si le son doit être synchronisé avec le volume de la musique du jeu. (type `boolean`) (**Par défaut**: `false`)
+- `syncSoundWithEffectsSetting` (facultatif): Si le son doit être synchronisé avec le volume des effets du jeu. (type `boolean`) (**Par défaut**: `false`)
 
 
 Pour les son qui sont joués a une position précise ou sur une entité des options supplémentaires sont disponibles:
