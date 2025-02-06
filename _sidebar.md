@@ -65,6 +65,7 @@
       * [sadoj-vehiclecustom](life/dev/framework/sadoj-vehiclecustom.md "sadoj-vehiclecustom")
       * [sadoj-vehiclelock](life/dev/framework/sadoj-vehiclelock.md "sadoj-vehiclelock")
       * [sadoj-weapon](life/dev/framework/sadoj-weapon.md "sadoj-weapon")
+      * [sadoj-pedsrelationship](life/dev/framework/sadoj-pedsrelationship.md "sadoj-pedsrelationship")
       * [Mini-jeux](life/dev/framework/minigames.md "Mini-jeux")
       * [pmms](life/dev/framework/pmms.md "pmms")
     * Tutoriels
