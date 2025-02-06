@@ -67,3 +67,14 @@ exports["sadoj-pedsrelationship"]:SetRelationshipBetweenGroups(group1 --[[ strin
   * **group2:** Le nom du second groupe de relation.
   * **relationshipLevel:** Le niveau de relation entre les deux groupes.
 <!-- tabs:end -->
+
+### Definir le groupe de relation d'un ped
+<!-- tabs:start -->
+### **Export (client & serveur)**
+```lua
+exports["sadoj-pedsrelationship"]:SetPedRelationshipGroup(ped --[[ integer ]], group --[[ string ]])
+```
+* **Paramètres:**
+  * **ped:** L'identifiant du ped.
+  * **group:** Le nom du groupe de relation.
+<!-- tabs:end -->
