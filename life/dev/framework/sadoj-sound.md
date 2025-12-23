@@ -14,7 +14,7 @@ Il est possible de charger un son à partir d'une URL ou à partir d'un fichier 
 
 - Pour les son à partir d'une URL il suffit simplement de mettre l'URL du son. (Exemple: `https://www.my-website.com/my-sound.mp3`)
 
-- Pour les son à partir d'un fichier local il faut que le fichier du son soit **dans votre script** et que le ficher soit chargé dans le fxmanifest.lua. (Exemple: `client/sounds/my-sound.mp3`)
+- Pour les son à partir d'un fichier local il faut que le fichier du son soit **dans votre script** et que le ficher soit chargé dans le fxmanifest.lua. (Exemple: `https://cfx-nui-myResourceName/sounds/my-sound.mp3`)
 
 
 La Liste des options disponibles pour les sons:
