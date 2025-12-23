@@ -34,6 +34,8 @@
         * [Roues/Pneus](life/dev/framework/sadoj-vehicle/wheels_tires.md "Roues/Pneus")
         * [Dégâts](life/dev/framework/sadoj-vehicle/damage.md "Dégâts")
         * [Divers](life/dev/framework/sadoj-vehicle/misc.md "Divers")
+        * [Alarmes](life/dev/framework/sadoj-vehicle/alarms.md "Alarmes")
+        * [Batterie](life/dev/framework/sadoj-vehicle/battery.md "Batterie")
         * [Autorisation des véhicules locaux](life/dev/framework/sadoj-vehicle/localvehiclepermission.md "Autorisation des véhicules locaux")
         * [Propriétaire](life/dev/framework/sadoj-vehicle/owner.md "Propriétaire")
       * [sadoj-callbacks](life/dev/framework/sadoj-callbacks.md "sadoj-callbacks")
