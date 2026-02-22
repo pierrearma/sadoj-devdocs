@@ -506,3 +506,32 @@ local result --[[ table<string, table> ]] = exports["sadoj-jobs"]:GetCompaniesPo
         * **Positions:** Tableau associatif des postes. La clé est l'identifiant du poste et la valeur est le nom d'affichage du poste.
 
 <!-- tabs:end -->
+
+### Récupérer le nom d'un joueur dans une structure
+
+<!-- tabs:start -->
+
+### **Export (client)**
+
+```lua
+local result --[[ string ]] = exports["sadoj-jobs"]:GetEmployeeName(companyId --[[ string ]])
+```
+
+* **Paramètres:**
+  * **companyId:** Identifiant de la structure.
+* **Retour:**
+    * **result:** Nom du joueur dans la structure. Si le joueur n'est pas dans la structure, retourne `nil`.
+
+### **Export (serveur)**
+
+```lua
+local result --[[ string ]] = exports["sadoj-jobs"]:GetPlayerEmployeeName(playerSrc --[[ number ]], companyId --[[ string ]])
+```
+
+* **Paramètres:**
+  * **playerSrc:** Identifiant serveur du joueur.
+  * **companyId:** Identifiant de la structure.
+* **Retour:**
+  * **result:** Nom du joueur dans la structure. Si le joueur n'est pas dans la structure, retourne `nil`.
+
+<!-- tabs:end -->
