@@ -478,7 +478,7 @@ local result --[[ string ]] = exports["sadoj-jobs"]:GetPositionLabel(companyId -
 ### **Export (client et serveur)**
 
 ```lua
-local companyLabel --[[ string ]], positionLabel --[[ string ]] = exports["sadoj-jobs"]:GetCompanyAndPositionLabel(companyId --[[ string ]], position --[[ string ]])
+local companyLabel --[[ string ]], positionLabel --[[ string ]] = exports["sadoj-jobs"]:GetCompanyPositionLabel(companyId --[[ string ]], position --[[ string ]])
 ```
 
 * **Paramètres:**
