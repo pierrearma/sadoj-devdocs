@@ -111,18 +111,15 @@ Quand une centrale est liée à un appel, les options suivantes peuvent être pa
 <!-- tabs:start -->
 #### **Export (client & serveur)**
 ```lua
-  local isConnected = exports["sadoj-dispatch"]:PlayerIsConnectedToOneOfCentrals(player --[[ player ]], centrals --[[ table ]])
+  local isConnected --[[ boolean ]], central --[[ nil|string ]] = exports["sadoj-dispatch"]:PlayerIsConnectedToOneOfCentrals(player --[[ player ]], centrals --[[ table ]])
 ```
 * **Paramètres:**
   * **serverId:** Le joueur à vérifier.
   * **centrals:** La liste des centrales à vérifier.
 * **Retour:**
   * **isConnected:** `true` si le joueur est connecté à une des centrales, `false` sinon.
+  * **central:** Le nom de la centrale à laquelle le joueur est connecté, ou `nil` si le joueur n'est connecté à aucune centrale.
 <!-- tabs:end -->
-
-
-
-
 
 ### Récupération des données
 
