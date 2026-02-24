@@ -23,7 +23,7 @@ local callbackFunction = function(selectedPermissions)
 
 end
 
-exports["sadoj-permsmenu"]:StartPermissionMenu(currentPermissions --[[table]], callbackFunction --[[function]] [, activeIdentifiers --[[boolean]], activeCompanies --[[boolean]], activeCompaniesWithGrades, activeCentrals --[[boolean]], activeLicenses --[[boolean]], activeEveryoneButton --[[boolean]], passwordIsActive --[[boolean]]])
+exports["sadoj-permsmenu"]:StartPermissionMenu(currentPermissions --[[table]], callbackFunction --[[function]] [, activeIdentifiers --[[boolean]], activeCompanies --[[boolean]], activeCompaniesWithGrades, activeCentrals --[[boolean]], activeLicenses --[[boolean]], activeEveryoneButton --[[boolean]], resetButton --[[boolean]], passwordIsActive --[[boolean]]])
 ```
 
 * **Paramètres:**
@@ -35,6 +35,7 @@ exports["sadoj-permsmenu"]:StartPermissionMenu(currentPermissions --[[table]], c
   * **activeCentrals:** Active le menu permettant de sélectionner les centrales (facultatif). `true` par défaut.
   * **activeLicenses:** Active le menu permettant de sélectionner les licences (facultatif). `true` par défaut.
   * **activeEveryoneButton:** Active le bouton "Tout le monde" (facultatif). `true` par défaut.
+  * **resetButton:** Active le bouton "Réinitialiser" (facultatif). `true` par défaut.
   * **passwordIsActive:** Active le champ de mot de passe (facultatif). `false` par défaut.
 
 <!-- tabs:end -->
