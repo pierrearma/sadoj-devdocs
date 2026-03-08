@@ -37,7 +37,7 @@ La liste des licences est contenue dans un tableau. Chaque licence est un tablea
 
 #### GetLicenses
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 local result --[[ table ]] = exports["sadoj-licenses"]:GetLicenses(identifier --[[ string ]])
 ```
@@ -49,7 +49,7 @@ local result --[[ table ]] = exports["sadoj-licenses"]:GetLicenses(identifier --
 
 #### GetLicenseState
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 local result --[[ number ]] = exports["sadoj-licenses"]:GetLicenseState(identifier --[[ string ]], licenseUuid --[[ string ]])
 ```
@@ -62,7 +62,7 @@ local result --[[ number ]] = exports["sadoj-licenses"]:GetLicenseState(identifi
 
 #### GetLicenseExpirationTimestamp
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 local result --[[ table ]] = exports["sadoj-licenses"]:GetLicenseExpirationTimestamp(identifier --[[ string ]], licenseUuid --[[ string ]])
 ```
@@ -75,7 +75,7 @@ local result --[[ table ]] = exports["sadoj-licenses"]:GetLicenseExpirationTimes
 
 #### GetLicenseSuspensionEndTimestamp
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 local result --[[ table ]] = exports["sadoj-licenses"]:GetLicenseSuspensionEndTimestamp(identifier --[[ string ]], licenseUuid --[[ string ]])
 ```
@@ -86,11 +86,25 @@ local result --[[ table ]] = exports["sadoj-licenses"]:GetLicenseSuspensionEndTi
   * **result:** La date de fin de suspension de la licence en timestamp ou `nil` si pas de suspension.
 <!-- tabs:end -->
 
+#### RequestLicense
+<!-- tabs:start -->
+#### **Export (client)**
+```lua
+local license --[[ table ]] = exports["sadoj-licenses"]:RequestLicense(licenseName --[[ string ]][, warningPopupData --[[ table ]]])
+```
+* **Paramètres:**
+  * **licenseName:** Le nom de la licence.
+  * **warningPopupData:** Un tableau contenant tous les paramètres de l'export `exports["sadoj-ui"]:DisplayWarningPopup` (optionnel).
+* **Retour:**
+  * **license:** La licence que le joueur a sélectionné, `nil` si le joueur a fermé la fenêtre ou n'a pas sélectionné de licence.
+<!-- tabs:end -->
+
+
 ### Vérification
 
 #### HasLicenseFromName
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 local hasLicense --[[ boolean ]], license --[[ table ]] = exports["sadoj-licenses"]:HasLicenseFromName(identifier --[[ string ]], licenseName --[[ string ]][, state --[[ number ]], noFakeLicense --[[ boolean ]]])
 ```
@@ -106,7 +120,7 @@ local hasLicense --[[ boolean ]], license --[[ table ]] = exports["sadoj-license
 
 #### HasLicenseFromUuid
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 local hasLicense --[[ boolean ]], license --[[ table ]] = exports["sadoj-licenses"]:HasLicenseFromUuid(identifier --[[ string ]], licenseUuid --[[ string ]])
 ```
@@ -123,7 +137,7 @@ local hasLicense --[[ boolean ]], license --[[ table ]] = exports["sadoj-license
 
 #### AddLicense
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 local uuid --[[ string ]] = exports["sadoj-licenses"]:AddLicense(identifier --[[ string ]], licenseName --[[ string ]][, metadata --[[ table ]]])
 ```
@@ -137,7 +151,7 @@ local uuid --[[ string ]] = exports["sadoj-licenses"]:AddLicense(identifier --[[
 
 #### AddFakeLicense
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 local uuid --[[ string ]] = exports["sadoj-licenses"]:AddFakeLicense(identifier --[[ string ]], licenseName --[[ string ]], lastName --[[ string ]], firstName --[[ string ]], birthDate --[[ string ]], sex --[[ string ]])
 ```
@@ -157,7 +171,7 @@ local uuid --[[ string ]] = exports["sadoj-licenses"]:AddFakeLicense(identifier 
 
 #### RemoveLicenseFromName
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 exports["sadoj-licenses"]:RemoveLicenseFromName(identifier --[[ string ]], licenseName --[[ string ]])
 ```
@@ -168,7 +182,7 @@ exports["sadoj-licenses"]:RemoveLicenseFromName(identifier --[[ string ]], licen
 
 #### RemoveLicense
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 exports["sadoj-licenses"]:RemoveLicense(identifier --[[ string ]], licenseUuid --[[ string ]])
 ```
@@ -182,7 +196,7 @@ exports["sadoj-licenses"]:RemoveLicense(identifier --[[ string ]], licenseUuid -
 
 #### SetLicenseState
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 exports["sadoj-licenses"]:SetLicenseState(identifier --[[ string ]], licenseUuid --[[ string ]], state --[[ number ]])
 ```
@@ -194,7 +208,7 @@ exports["sadoj-licenses"]:SetLicenseState(identifier --[[ string ]], licenseUuid
 
 #### SetLicenseExpirationTimestamp
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 exports["sadoj-licenses"]:SetLicenseExpirationTimestamp(identifier --[[ string ]], licenseUuid --[[ string ]], expirationTimestamp --[[ number ]])
 ```
@@ -206,7 +220,7 @@ exports["sadoj-licenses"]:SetLicenseExpirationTimestamp(identifier --[[ string ]
 
 #### SetLicenseSuspended
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 exports["sadoj-licenses"]:SetLicenseSuspended(identifier --[[ string ]], licenseUuid --[[ string ]], endDateOfSuspensionTimestamp --[[ number ]])
 ```
@@ -220,7 +234,7 @@ exports["sadoj-licenses"]:SetLicenseSuspended(identifier --[[ string ]], license
 
 #### SetLicenseMetadata
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 exports["sadoj-licenses"]:SetLicenseMetadata(identifier --[[ string ]], licenseUuid --[[ string ]], metadataKey --[[ string ]], metadataDisplayed --[[ boolean ]], metadataCanRemove --[[ boolean ]], metadataValue --[[ any ]])
 ```
@@ -235,7 +249,7 @@ exports["sadoj-licenses"]:SetLicenseMetadata(identifier --[[ string ]], licenseU
 
 #### RemoveLicenseMetadata
 <!-- tabs:start -->
-#### **Event (client & serveur)**
+#### **Export (client & serveur)**
 ```lua
 exports["sadoj-licenses"]:RemoveLicenseMetadata(identifier --[[ string ]], licenseUuid --[[ string ]], metadataKey --[[ string ]])
 ```
