@@ -61,6 +61,7 @@
       * [sadoj-persistentvehicles](life/dev/framework/sadoj-persistentvehicles.md "sadoj-persistentvehicles")
       * [sadoj-police](life/dev/framework/sadoj-police.md "sadoj-police")
       * [sadoj-quotas](life/dev/framework/sadoj-quotas.md "sadoj-quotas")
+      * [sadoj-radio](life/dev/framework/sadoj-radio.md "sadoj-radio")
       * [sadoj-ropes](life/dev/framework/sadoj-ropes.md "sadoj-ropes")
       * [sadoj-sound](life/dev/framework/sadoj-sound.md "sadoj-sound")
       * [sadoj-turfwars](life/dev/framework/sadoj-turfwars.md "sadoj-turfwars")
