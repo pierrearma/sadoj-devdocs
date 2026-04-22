@@ -42,16 +42,11 @@ local vehicle --[[ vehicle ]] = exports["sadoj-vehicle"]:GetVehicleByIdentifier(
 ## Plaque
 
 ### Récupérer la plaque d'un véhicule
+
+> [!ATTENTION]
+> Cette export permet de récupérer la plaque qui est affiché sur le véhicule, attention cela peut être une fausse plaque.
 <!-- tabs:start -->
-### **Export (client)**
-```lua
-local plate --[[ string ]] = exports["sadoj-vehicle"]:GetVehiclePlate(vehicle --[[ vehicle ]])
-```
-* **Paramètres:**
-  * **vehicle:** le véhicule.
-* **Retour:**
-  * **plate:** la plaque du véhicule.
-### **Export (serveur)**
+### **Export (client & serveur)**
 ```lua
 local plate --[[ string ]] = exports["sadoj-vehicle"]:GetVehiclePlate(vehicle --[[ vehicle ]])
 ```
@@ -61,32 +56,41 @@ local plate --[[ string ]] = exports["sadoj-vehicle"]:GetVehiclePlate(vehicle --
   * **plate:** la plaque du véhicule.
 <!-- tabs:end -->
 
-### Définir la plaque d'un véhicule
-
-> [!warning]
-> Pour toute utilisation `côté client` de l'export ci-dessous, il est nécessaire de vérifier que le joueur a bien le contrôle du véhicule. Pour cela, vous pouvez utiliser la native `NetworkHasControlOfEntity`.
-
+### Récupérer la vraie plaque d'un véhicule
+> [!ATTENTION]
+> Cette export permet de récupérer la vraie plaque du véhicule, même si une fausse plaque est affiché.
 <!-- tabs:start -->
-### **Export (client)**
+### **Export (client & serveur)**
 ```lua
-exports["sadoj-vehicle"]:SetVehiclePlate(vehicle --[[ vehicle ]], plate --[[ string ]])
+local plate --[[ string ]] = exports["sadoj-vehicle"]:GetVehicleRealPlate(vehicle --[[ vehicle ]])
 ```
 * **Paramètres:**
   * **vehicle:** le véhicule.
-  * **plate:** la plaque du véhicule.
-### **Event (client)**
+* **Retour:**
+  * **plate:** la vraie plaque du véhicule.
+<!-- tabs:end -->
+
+### Changer la plaque d'un véhicule
+<!-- tabs:start -->
+### **Event (client & serveur)**
 ```lua
-TriggerServerEvent("sadoj-vehicle:server:SetVehiclePlate", netId --[[ integer ]], plate --[[ string ]])
-```
-* **Paramètres:**
-  * **netId:** le netId du véhicule.
-  * **plate:** la plaque du véhicule.
-### **Export (serveur)**
-```lua
-exports["sadoj-vehicle"]:SetVehiclePlate(vehicle --[[ vehicle ]], plate --[[ string ]])
+exports["sadoj-vehicle"]:ChangeVehiclePlate(vehicle --[[ vehicle ]], plate --[[ string ]], displayOnly --[[ boolean ]])
 ```
 * **Paramètres:**
   * **vehicle:** le véhicule.
-  * **plate:** la plaque du véhicule.
+  * **plate:** la nouvelle plaque du véhicule.
+  * **displayOnly:** si `true`, la plaque ne sera changé que visuellement, la vraie plaque du véhicule ne sera pas changé.
+<!-- tabs:end -->
+
+### Changer la plaque d'un véhicule par son identifiant
+<!-- tabs:start -->
+### **Event (client & serveur)**
+```lua
+exports["sadoj-vehicle"]:ChangeVehiclePlateByIdentifier(identifier --[[ string ]], plate --[[ string ]], displayOnly --[[ boolean ]])
+```
+* **Paramètres:**
+  * **identifier:** l'identifiant du véhicule.
+  * **plate:** la nouvelle plaque du véhicule.
+  * **displayOnly:** si `true`, la plaque ne sera changé que visuellement, la vraie plaque du véhicule ne sera pas changé.
 <!-- tabs:end -->
 
