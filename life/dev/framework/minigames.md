@@ -13,7 +13,7 @@
 
 Démo:
 
-![Bruteforce](../../../_media/framework/minigames/minigame_bruteforce.webm ':include :type=video style=max-height:500px;max-width:100%; controls')
+<video src="_media/framework/minigames/minigame_bruteforce.webm" style="max-height:500px;max-width:100%;" controls></video>
 
 Ce mini-jeux ne fait aucune animation, uniquement l'affichage. A vous d'ajouter des animations.
 
@@ -56,7 +56,7 @@ end
 
 Démo:
 
-![Bruteforce](../../../_media/framework/minigames/minigame_datacrack.webm ':include :type=video style=max-height:500px;max-width:100%; controls')
+<video src="_media/framework/minigames/minigame_datacrack.webm" style="max-height:500px;max-width:100%;" controls></video>
 
 Ce mini-jeux ne fait aucune animation, uniquement l'affichage. A vous d'ajouter des animations.
 
@@ -95,7 +95,7 @@ end
 
 Démo:
 
-![Drilling](../../../_media/framework/minigames/minigame_drilling.webm ':include :type=video style=max-height:500px;max-width:100%; controls')
+<video src="_media/framework/minigames/minigame_drilling.webm" style="max-height:500px;max-width:100%;" controls></video>
 
 Ce mini-jeux gère déjà les animations. Il faut bien placer le joueur au préalable.
 
@@ -137,7 +137,7 @@ local result --[[ table ]] = exports.minigame_drilling:Start(keepOldResult --[[ 
 
 Démo:
 
-![Fingerprint](../../../_media/framework/minigames/minigame_fingerprint.webm ':include :type=video style=max-height:500px;max-width:100%; controls')
+<video src="_media/framework/minigames/minigame_fingerprint.webm" style="max-height:500px;max-width:100%;" controls></video>
 
 Ce mini-jeux ne fait aucune animation, uniquement l'affichage. A vous d'ajouter des animations.
 
@@ -179,7 +179,7 @@ end
 
 Démo:
 
-![Safecracking](../../../_media/framework/minigames/minigame_safecracking.webm ':include :type=video style=max-height:500px;max-width:100%; controls')
+<video src="_media/framework/minigames/minigame_safecracking.webm" style="max-height:500px;max-width:100%;" controls></video>
 
 Ce mini-jeux gère déjà les animations. Il faut bien placer le joueur au préalable.
 
@@ -219,7 +219,7 @@ local result --[[ table ]] = exports.minigame_safecracking:Start(combinations --
 
 Démo:
 
-![Lockpicking](../../../_media/framework/minigames/minigame_lockpicking.webm ':include :type=video style=max-height:500px;max-width:100%; controls')
+<video src="_media/framework/minigames/minigame_lockpicking.webm" style="max-height:500px;max-width:100%;" controls></video>
 
 Ce mini-jeux gère déjà les animations. Il faut bien placer le joueur au préalable.
 
@@ -259,7 +259,7 @@ end
 
 Démo:
 
-![Keypack](../../../_media/framework/minigames/minigame_keypackhack.webm ':include :type=video style=max-height:500px;max-width:100%; controls')
+<video src="_media/framework/minigames/minigame_keypackhack.webm" style="max-height:500px;max-width:100%;" controls></video>
 
 Ce mini-jeux ne fait aucune animation, uniquement l'affichage. A vous d'ajouter des animations.
 
@@ -303,7 +303,7 @@ end
 
 Démo:
 
-![Voltlab](../../../_media/framework/minigames/minigame_voltlab.webm ':include :type=video style=max-height:500px;max-width:100%; controls')
+<video src="_media/framework/minigames/minigame_voltlab.webm" style="max-height:500px;max-width:100%;" controls></video>
 
 Ce mini-jeux ne fait aucune animation, uniquement l'affichage. A vous d'ajouter des animations.
 
@@ -333,4 +333,3 @@ end
     * `"abort"` si abandonné.
 
 <!-- tabs:end -->
-

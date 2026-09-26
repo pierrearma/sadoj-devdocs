@@ -1,9 +1,10 @@
 // Docsify plugin pour ajouter la dernière date de modification
+window.$docsify = window.$docsify || {};
 window.$docsify.plugins = [
     function(hook, vm) {
         // Obtenir les options de configuration depuis $docsify
         const config = vm.config || {};
-        const repoUrl = config.repo || ''; // URL du dépôt
+        const repoUrl = config.repo || 'https://github.com/pierrearma/sadoj-devdocs'; // URL du dépôt
         const formatUpdated = config.formatUpdated || 'Dernière mise à jour de cette page le {DD}/{MM}/{YYYY} à {HH}:{mm}.'; // Format du texte
 
         // Extraire les informations du repo depuis l'URL
@@ -15,48 +16,68 @@ window.$docsify.plugins = [
 
         const [_, repoOwner, repoName] = repoMatch; // Extraire le propriétaire et le nom du repo
 
+        function renderDate(dateStr, html) {
+            const lastModifiedDate = new Date(dateStr);
+            if (isNaN(lastModifiedDate.getTime())) return html;
+
+            const replacements = {
+                '{DD}': lastModifiedDate.toLocaleDateString('fr-FR', { day: '2-digit' }),
+                '{MM}': lastModifiedDate.toLocaleDateString('fr-FR', { month: '2-digit' }),
+                '{YYYY}': lastModifiedDate.toLocaleDateString('fr-FR', { year: 'numeric' }),
+                '{HH}': lastModifiedDate.getHours().toString().padStart(2, '0'),
+                '{mm}': lastModifiedDate.getMinutes().toString().padStart(2, '0')
+            };
+
+            let formattedText = formatUpdated;
+            for (const key in replacements) {
+                formattedText = formattedText.replace(key, replacements[key]);
+            }
+
+            return html + `<p class="last-modified-date">${formattedText}</p>`;
+        }
+
         // Utiliser l'API GitHub pour récupérer la date de dernière modification d'un fichier
         hook.afterEach(function(html, next) {
-            const filePath = vm.route.file; // Récupérer le nom du fichier actuel directement via Docsify
+            // En Docsify v5, vm.route.file commence par un slash ('/index.md') qu'il faut retirer pour GitHub
+            const filePath = (vm.route.file || '').replace(/^\/+/, '');
+            if (!filePath) {
+                return next(html);
+            }
+
+            // Vérifier le cache (session / local) pour éviter de saturer le quota GitHub (60 req/h)
+            const cacheKey = 'docsify_lastmod_' + filePath;
+            try {
+                const cachedDate = sessionStorage.getItem(cacheKey) || localStorage.getItem(cacheKey);
+                if (cachedDate) {
+                    return next(renderDate(cachedDate, html));
+                }
+            } catch (e) {}
 
             // Effectuer une requête pour obtenir les informations des commits depuis l'API GitHub
-            fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/commits?path=${filePath}`)
+            fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/commits?path=${encodeURIComponent(filePath)}`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Erreur lors de la récupération des commits');
+                        throw new Error('Erreur HTTP ' + response.status);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    if (data && data[0] && data[0].commit && data[0].commit.committer) {
-                        const lastModifiedDate = new Date(data[0].commit.committer.date); // Date de la dernière modification
+                    const commit = data && data[0] && data[0].commit;
+                    const dateStr = commit && ((commit.committer && commit.committer.date) || (commit.author && commit.author.date));
 
-                        // Formater la date selon les besoins
-                        const replacements = {
-                            '{DD}': lastModifiedDate.toLocaleDateString('fr-FR', { day: '2-digit' }),
-                            '{MM}': lastModifiedDate.toLocaleDateString('fr-FR', { month: '2-digit' }),
-                            '{YYYY}': lastModifiedDate.toLocaleDateString('fr-FR', { year: 'numeric' }),
-                            '{HH}': lastModifiedDate.getHours().toString().padStart(2, '0'),
-                            '{mm}': lastModifiedDate.getMinutes().toString().padStart(2, '0')
-                        };
-
-                        let formattedText = formatUpdated;
-                        for (const key in replacements) {
-                            formattedText = formattedText.replace(key, replacements[key]);
-                        }
-
-                        // Ajouter la date à la fin de la page
-                        const footer = `<p>${formattedText}</p>`;
-                        html += footer; // Ajouter le texte à la fin de la page
-
-                        next(html); // Passer le contenu modifié au prochain hook
+                    if (dateStr) {
+                        try {
+                            sessionStorage.setItem(cacheKey, dateStr);
+                            localStorage.setItem(cacheKey, dateStr);
+                        } catch (e) {}
+                        next(renderDate(dateStr, html));
                     } else {
-                        next(html); // Si pas de données, continuer sans ajouter de date
+                        next(html);
                     }
                 })
                 .catch(error => {
-                    console.error('Erreur lors de la récupération des données:', error);
-                    next(html); // En cas d'erreur, continuer sans ajouter de date
+                    // En cas d'erreur réseau ou de rate limit, continuer sans bloquer l'affichage
+                    next(html);
                 });
         });
     },
