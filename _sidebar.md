@@ -48,6 +48,7 @@
       * [sadoj-garages](life/dev/framework/sadoj-garages.md "sadoj-garages")
       * [sadoj-handcuffs](life/dev/framework/sadoj-handcuffs.md "sadoj-handcuffs")
       * [sadoj-inventory](life/dev/framework/sadoj-inventory.md "sadoj-inventory")
+      * [sadoj-interact](life/dev/framework/sadoj-interact.md "sadoj-interact")
       * [sadoj-jobs](life/dev/framework/sadoj-jobs.md "sadoj-jobs")
       * [sadoj-keyboard](life/dev/framework/sadoj-keyboard.md "sadoj-keyboard")
       * [sadoj-licenses](life/dev/framework/sadoj-licenses.md "sadoj-licenses")
