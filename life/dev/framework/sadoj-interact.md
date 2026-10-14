@@ -73,6 +73,7 @@ Le système gère également le maintien de touche (appui long avec barre de pro
 | `interactDst` | Distance maximale à laquelle le joueur doit être pour que le **prompt d'interaction** apparaisse et que la touche d'action soit active. | `1.0` (`1.5` pour les interactions globales) |
 | `offset` | Décalage `vec3` appliqué aux coordonnées du point par rapport à l'entité ou au bone. | `vec3(0.0, 0.0, 0.0)` |
 | `entityOffset` | *(Sur les bones uniquement)* Si défini sur `true`, l'orientation de `offset` est calculée par rapport à la rotation de l'entité complète et non selon la rotation locale de l'os. | `false` |
+| `directionalOffset` | *(Sur les bones uniquement)* Si défini sur `true`, oriente automatiquement l'offset vers l'extérieur de l'entité selon sa position (inverse l'axe Y selon que le bone est situé à l'avant ou à l'arrière, et l'axe X selon la droite ou la gauche). Idéal pour les capots et coffres (moteur arrière / frunk). Active également l'orientation de l'entité. | `false` |
 
 ---
 
@@ -120,7 +121,7 @@ Le script vérifie automatiquement la présence de chaque os sur le modèle de l
 
 Chaque élément de la liste peut être :
 * Une simple chaîne de caractères (`string`).
-* Une table contenant le nom de l'os ainsi que des surcharges optionnelles (`offset`, `entityOffset`, `distance`, `interactDst`). Tous les champs non spécifiés héritent des valeurs globales définies à la racine de l'interaction.
+* Une table contenant le nom de l'os ainsi que des surcharges optionnelles (`offset`, `entityOffset`, `directionalOffset`, `distance`, `interactDst`). Tous les champs non spécifiés héritent des valeurs globales définies à la racine de l'interaction.
 
 ```lua
 -- Exemple avec liste de repli et surcharges individuelles
@@ -266,6 +267,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddEntityBoneInteraction({
     interactDst = 1.5, --[[ number (facultatif, défaut: 1.0) ]]
     offset = vec3(0.0, -0.2, 0.0), --[[ vector3 (facultatif) ]]
     entityOffset = true, --[[ boolean (facultatif, défaut: false) ]]
+    directionalOffset = true, --[[ boolean (facultatif, défaut: false) ]]
     options = { --[[ table ]]
         {
             label = 'Ouvrir le coffre',
@@ -278,7 +280,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddEntityBoneInteraction({
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `entity`, `bone` (ou table de bones ordonnée), `options`, `distance`, `interactDst`, `offset`, `entityOffset`.
+  * **data:** Table contenant `entity`, `bone` (ou table de bones ordonnée), `options`, `distance`, `interactDst`, `offset`, `entityOffset`, `directionalOffset`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
@@ -427,7 +429,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalPedBoneInteraction(
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `bone` (ou liste de bones prioritaires), `options`, `distance`, `interactDst`, `offset`, `entityOffset`.
+  * **data:** Table contenant `bone` (ou liste de bones prioritaires), `options`, `distance`, `interactDst`, `offset`, `entityOffset`, `directionalOffset`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
@@ -499,7 +501,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalPlayerBoneInteracti
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `bone` (ou liste de bones prioritaires), `options`, `distance`, `interactDst`, `offset`, `entityOffset`.
+  * **data:** Table contenant `bone` (ou liste de bones prioritaires), `options`, `distance`, `interactDst`, `offset`, `entityOffset`, `directionalOffset`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
@@ -554,8 +556,9 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalVehicleBoneInteract
     bone = 'boot', --[[ string|table (nom d'os ou liste de fallback) ]]
     distance = 2.5, --[[ number (facultatif, défaut: 10.0) ]]
     interactDst = 2.0, --[[ number (facultatif, défaut: 1.0) ]]
-    offset = vec3(0.0, -0.5, 0.0), --[[ vector3 (facultatif) ]]
+    offset = vec3(0.0, 0.5, 0.0), --[[ vector3 (facultatif, magnitude vers l'extérieur si directionalOffset) ]]
     entityOffset = true, --[[ boolean (facultatif, défaut: false) ]]
+    directionalOffset = true, --[[ boolean (facultatif, défaut: false - adapte automatiquement avant/arrière) ]]
     options = { --[[ table ]]
         {
             name = 'veh:trunk_toggle',
@@ -575,7 +578,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalVehicleBoneInteract
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `bone` (ou tableau de bones), `options`, `distance`, `interactDst`, `offset`, `entityOffset`.
+  * **data:** Table contenant `bone` (ou tableau de bones), `options`, `distance`, `interactDst`, `offset`, `entityOffset`, `directionalOffset`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
