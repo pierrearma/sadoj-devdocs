@@ -53,6 +53,7 @@
       * [sadoj-keyboard](life/dev/framework/sadoj-keyboard.md "sadoj-keyboard")
       * [sadoj-licenses](life/dev/framework/sadoj-licenses.md "sadoj-licenses")
       * [sadoj-logs](life/dev/framework/sadoj-logs.md "sadoj-logs")
+      * [sadoj-medical](life/dev/framework/sadoj-medical.md "sadoj-medical")
       * [sadoj-metabolism](life/dev/framework/sadoj-metabolism.md "sadoj-metabolism")
       * [sadoj-misc](life/dev/framework/sadoj-misc.md "sadoj-misc")
       * [sadoj-modelhide](life/dev/framework/sadoj-modelhide.md "sadoj-modelhide")
