@@ -41,6 +41,7 @@
       * [sadoj-callbacks](life/dev/framework/sadoj-callbacks.md "sadoj-callbacks")
       * [sadoj-cayoperico](life/dev/framework/sadoj-cayoperico.md "sadoj-cayoperico")
       * [sadoj-characters](life/dev/framework/sadoj-characters.md "sadoj-characters")
+      * [sadoj-clothes](life/dev/framework/sadoj-clothes.md "sadoj-clothes")
       * [sadoj-dark](life/dev/framework/sadoj-dark.md "sadoj-dark")
       * [sadoj-discord](life/dev/framework/sadoj-discord.md "sadoj-discord")
       * [sadoj-dispatch](life/dev/framework/sadoj-dispatch.md "sadoj-dispatch")
