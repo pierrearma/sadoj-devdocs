@@ -18,6 +18,7 @@ Le script gère tout ce qui touche aux vêtements :
 - les magasins de vêtements et le paiement ;
 - les vêtements jetés au sol ;
 - la fouille d'un joueur ;
+- les actions ajoutées par d'autres ressources dans le menu clic droit des vêtements ;
 - les options des vêtements (protection balistique, vision nocturne, masque à gaz, empreintes cachées…) ;
 - le menu d'administration et le studio photo (outils de dev).
 
@@ -317,6 +318,122 @@ local success --[[ boolean ]] = exports["sadoj-clothes"]:SearchPlayer(targetServ
 exports["sadoj-clothes"]:CloseSearchNUI()
 ```
 Ferme l'interface de fouille si elle est ouverte.
+<!-- tabs:end -->
+
+### Actions sur les vêtements
+
+Une autre ressource peut ajouter des actions au menu clic droit des vêtements : sur un vêtement précis, une catégorie, un groupe, ou tous les vêtements. Elles s'affichent sous les actions de `Config.Actions`, dans l'ordre d'enregistrement.
+
+#### RegisterClothingAction
+<!-- tabs:start -->
+#### **Export (client)**
+```lua
+local registered --[[ boolean ]] = exports["sadoj-clothes"]:RegisterClothingAction(id --[[ string ]], {
+    label = "Fouiller les poches",           -- string, requis
+    icon = "search",                         -- string, optionnel (défaut "zap")
+    equipped = true,                         -- boolean, optionnel
+    contexts = { "inventory", "dressing" },  -- string[], optionnel (défaut { "inventory" })
+    match = {                                -- filtres ou fonction, optionnel (défaut : tous les vêtements)
+        { type = 2, category = 11 },
+        { clothingType = "Police", category = 9 },
+    },
+    canInteract = function(item, context)    -- optionnel
+        return not IsPedInAnyVehicle(PlayerPedId(), false)
+    end,
+    onSelect = function(item, context)       -- requis
+        exports["sadoj-clothes"]:CloseClothesMenu()
+        TriggerServerEvent("mon-script:fouillePoches", item.uuid)
+    end,
+})
+```
+* **Paramètres:**
+  * **id:** L'identifiant de l'action, propre à la ressource appelante (deux ressources peuvent utiliser le même). Enregistrer à nouveau un id remplace l'action, qui garde sa place dans le menu.
+  * **label:** Le texte affiché dans le menu.
+  * **icon:** Le nom d'une icône de `html/icons.js` (`search`, `shield`, `eye`, `tag`…).
+  * **equipped:** `true` : vêtement porté uniquement, `false` : vêtement non porté uniquement, `nil` : toujours. Si l'état ne correspond pas, l'action est grisée avec une info-bulle.
+  * **contexts:** Où l'action apparaît :
+    * `"inventory"` : inventaire normal (`F9`), panneau des vêtements portés compris ;
+    * `"dressing"` : dressing, vêtements de l'inventaire du joueur ;
+    * `"dressingStorage"` : dressing, vêtements rangés dans le dressing.
+  * **match:** Les vêtements concernés (voir ci-dessous). `nil`, `{}` ou `{ {} }` = tous les vêtements.
+  * **canInteract:** Renvoie `false` pour cacher l'action.
+  * **onSelect:** Appelée au clic.
+* **Retour:**
+  * **registered:** `false` si la définition est invalide (champ inconnu, contexte inconnu, filtre mal formé…). L'erreur est affichée dans la console F8 avec le nom de la ressource appelante.
+
+**Filtres `match`** : une liste de filtres. L'action apparaît si **un** des filtres correspond, et un filtre correspond si **tous** ses champs correspondent.
+
+| Champ | Correspond si |
+|---|---|
+| `key` | clé du vêtement `type_category_collection_drawableId_textureId`, avec ou sans `_textureId` |
+| `type` | `CLOTHING_TYPES` du vêtement |
+| `category` | catégorie du vêtement |
+| `collection` | collection du vêtement (`""` = jeu de base) |
+| `drawableId` | modèle du vêtement (ou id du groupe de gants) |
+| `textureId` | texture du vêtement |
+| `clothingType` | le vêtement a ce type de boutique (`data/clothing_types.json` : `"Police"`, `"Pompier"`…) |
+| `option` | le vêtement a cette option (`data/clothing_options.json` : `night_vision`, `ballistic_helmet`…) |
+| `gender` | `"male"` ou `"female"`, genre du personnage |
+
+| `match` | Vêtements concernés |
+|---|---|
+| `{ { type = 2, category = 11 } }` | une catégorie |
+| `{ { type = 2, category = 11, collection = "mp_m_sadoj_01", drawableId = 23 } }` | un modèle, toutes textures |
+| `{ { key = "2_11_mp_m_sadoj_01_23_1" } }` | un vêtement précis |
+| `{ { clothingType = "Police" } }` | un groupe de boutique |
+| `{ { option = "night_vision" } }` | un groupe d'option |
+| `function(item, context) return ... end` | ce que la fonction décide |
+
+**Paramètres reçus** par `onSelect`, `canInteract` et `match` (fonction) :
+  * **item:** Une copie de l'item (voir [Item](#item-vêtement-dinventaire)), avec en plus `equipped` (`true` si le joueur le porte).
+  * **context:** Le contexte du menu (`"inventory"`, `"dressing"` ou `"dressingStorage"`).
+
+!> Un champ inconnu dans un filtre fait refuser l'action, pour qu'une faute de frappe ne la mette pas sur tous les vêtements. Un filtre seul doit aussi être dans une liste : `match = { { category = 11 } }`.
+
+?> Les conditions sont vérifiées à l'ouverture du menu puis à nouveau au clic. Le menu reste ouvert pendant `onSelect` : appeler `CloseClothesMenu` avant d'ouvrir une autre interface. Une erreur dans une de ces fonctions est affichée dans la console F8 sans affecter l'inventaire. Les actions d'une ressource arrêtée sont supprimées automatiquement.
+
+!> En `dressingStorage`, l'item vient de l'interface et n'est jamais porté (une action avec `equipped = true` n'y apparaît pas). Toute action qui modifie des données doit être validée côté serveur par la ressource appelante.
+<!-- tabs:end -->
+
+#### RemoveClothingAction
+<!-- tabs:start -->
+#### **Export (client)**
+```lua
+exports["sadoj-clothes"]:RemoveClothingAction(id --[[ string ]])
+```
+* **Paramètres:**
+  * **id:** L'identifiant donné à `RegisterClothingAction` par la ressource appelante.
+<!-- tabs:end -->
+
+#### IsClothingItemEquipped
+<!-- tabs:start -->
+#### **Export (client)**
+```lua
+local equipped --[[ boolean ]] = exports["sadoj-clothes"]:IsClothingItemEquipped(uuid --[[ string ]])
+```
+* **Paramètres:**
+  * **uuid:** L'uuid de l'item.
+* **Retour:**
+  * **equipped:** `true` si le joueur porte cet item.
+<!-- tabs:end -->
+
+#### GetEquippedClothes
+<!-- tabs:start -->
+#### **Export (client)**
+```lua
+local clothes --[[ table ]] = exports["sadoj-clothes"]:GetEquippedClothes()
+```
+* **Retour:**
+  * **clothes:** Une copie des vêtements portés par le joueur (voir [Vêtements portés](#vêtements-portés-clothes)).
+<!-- tabs:end -->
+
+#### CloseClothesMenu
+<!-- tabs:start -->
+#### **Export (client)**
+```lua
+exports["sadoj-clothes"]:CloseClothesMenu()
+```
+Ferme le menu vêtements (inventaire, dressing) s'il est ouvert.
 <!-- tabs:end -->
 
 ### Tenues personnelles
