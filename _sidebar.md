@@ -38,6 +38,7 @@
         * [Batterie](life/dev/framework/sadoj-vehicle/battery.md "Batterie")
         * [Autorisation des véhicules locaux](life/dev/framework/sadoj-vehicle/localvehiclepermission.md "Autorisation des véhicules locaux")
         * [Propriétaire](life/dev/framework/sadoj-vehicle/owner.md "Propriétaire")
+      * [sadoj-banks](life/dev/framework/sadoj-banks.md "sadoj-banks")
       * [sadoj-callbacks](life/dev/framework/sadoj-callbacks.md "sadoj-callbacks")
       * [sadoj-cayoperico](life/dev/framework/sadoj-cayoperico.md "sadoj-cayoperico")
       * [sadoj-characters](life/dev/framework/sadoj-characters.md "sadoj-characters")
