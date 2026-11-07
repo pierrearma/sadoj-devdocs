@@ -16,6 +16,7 @@ Ce script gère l'argent des joueurs en jeu :
 - Les comptes bancaires des joueurs et des entreprises
 - Les virements entre comptes
 - Le terminal de paiement (TPE) : faire **payer** un joueur ou lui **verser** de l'argent
+- Le journal de caisse : les paiements en espèces aux TPE des entreprises, comme les tickets d'une caisse enregistreuse
 - Les distributeurs automatiques (DAB) : dépôt et retrait d'espèces
 
 Les comptes bancaires ne sont pas stockés par le script : ils sont gérés par le site des banques (sadoj-banks web), qui est la seule source de vérité pour les soldes, les cartes, les frais et les taxes. Le script se contente de garder une copie des comptes en mémoire et d'envoyer les opérations au site.
@@ -121,7 +122,7 @@ La liste n'est pas figée dans le script : les types sont créés sur le site (A
 
 - Le code est insensible à la casse (`"Clothing"` = `"clothing"`).
 - Un code inconnu ou désactivé **ne bloque pas** le paiement : il passe sans type, au taux global, et un avertissement s'affiche dans la console serveur.
-- Les paiements en espèces ne sont pas concernés (aucune taxe).
+- En espèces, le joueur ne paie aucune taxe. Au [TPE d'une entreprise](#journal-de-caisse-et-taxe-sur-les-espèces), le type fixe la taxe d'État que **l'entreprise** doit sur l'encaissement.
 - Les paiements vers le Trésor public restent exonérés de taxe.
 
 > [!TIP]
@@ -176,6 +177,70 @@ Règles (identiques pour la carte et les espèces) :
 
 > [!TIP]
 > Pour la part des PNJ, utilisez un compte PNJ (`PNJ-SA-…`), créé sur le site depuis Administration générale → Comptes PNJ, et un coffre dédié pour les espèces.
+
+**Avec un TPE d'entreprise** ([`companyId`](#options-du-terminal)), la part de l'entreprise s'écrit de deux façons :
+
+- **avec son coffre ou son compte, marqué `company = true`** : `{ safe = "pdm", company = true, percent = 60 }` ;
+- **sans destinataire** (ni `account` ni `safe`) : le serveur la remplace par le compte courant de l'entreprise, ou par son coffre trouvé par `coffres.company_id`.
+
+Les autres parts vont aux destinataires indiqués.
+
+```lua
+companyId = "PDM",
+accountNumberForTransaction = {
+    { percent = 60 },                               -- compte courant de PDM
+    { account = "PNJ-SA-000001" },                  -- le reste
+},
+safeNameForMoney = {
+    { safe = "pdm", company = true, percent = 60 }, -- coffre de PDM
+    { safe = "pnj_vehicules" },                     -- le reste
+},
+```
+
+Au moins une part doit aller à l'entreprise. Un compte nommé sans `company = true` compte aussi comme le sien s'il lui appartient, de même qu'un coffre dont `coffres.company_id` est l'entreprise.
+
+En espèces, chaque part a son [ticket de caisse](#journal-de-caisse-et-taxe-sur-les-espèces) selon le coffre qui la reçoit :
+
+| Coffre de la part | Ticket |
+| --- | --- |
+| Coffre de l'entreprise du TPE (part sans `safe`, marquée `company = true`, ou dont `coffres.company_id` est l'entreprise) | Au nom de l'entreprise du TPE |
+| Coffre d'une autre entreprise (`coffres.company_id`) | Au nom de cette entreprise, qui en doit la taxe |
+| Coffre PNJ ou sans entreprise | Aucun |
+
+Verser une part dans le coffre d'une autre entreprise ne permet donc pas d'échapper au journal. Le ticket indique qu'il ne s'agit que d'une part, et précise le montant total du paiement.
+
+### Journal de caisse et taxe sur les espèces
+
+Un paiement en espèces ne passe par aucun compte : l'argent va du porte-monnaie au coffre. Comme la caisse enregistreuse d'un commerce, le **TPE d'une entreprise** inscrit chaque opération en espèces à la banque, sous forme d'un **ticket de caisse** (`TK-00000001`, un par coffre). Chaque ticket contient le montant, le motif, le type de transaction, le coffre et son solde après l'opération.
+
+Un TPE est « d'entreprise » quand il est ouvert avec [`options.companyId`](#options-du-terminal). Sans `companyId` (coffres PNJ, ressource pas encore migrée), le paiement fonctionne mais **ne crée aucun ticket** et ne doit aucune taxe.
+
+Pour un paiement [réparti](#répartition-dun-paiement-entre-plusieurs-comptes), chaque part versée dans le coffre d'une entreprise a son ticket, au nom de l'entreprise propriétaire du coffre. Les parts des coffres PNJ n'en ont pas.
+
+| | Avec `companyId` | Sans `companyId` |
+| --- | --- | --- |
+| Coffre et compte | Déduits de l'entreprise et vérifiés par le serveur | Ceux que vous passez |
+| Ticket de caisse (espèces) | Oui | Non |
+| Taxe d'État sur les espèces | Due par l'entreprise | Aucune |
+
+**Qui voit les tickets** (comme en vrai, le client d'une caisse reste anonyme) :
+
+- l'entreprise, sur le site de sa banque → onglet « Journal de caisse » (permission « Consulter l'historique »), avec un Z de caisse par jour ;
+- le Gouvernement, lors d'un contrôle fiscal de l'entreprise → onglet « Caisse », qui compare ce qu'elle a encaissé et ce qu'elle a déposé en banque ;
+- le joueur qui paie est enregistré, mais n'est montré à personne.
+
+**La taxe sur les espèces** :
+
+- Chaque **encaissement** (`Payment`) doit la taxe d'État au même taux qu'un paiement par carte : taux global + surtaxe du type. Elle est à la charge de **l'entreprise** : le joueur paie le prix affiché.
+- Les **versements** (`Payout`) en espèces ne sont pas taxés.
+- La taxe est prélevée sur le compte de l'entreprise quand elle **dépose ses espèces en banque par convoi de fonds**, dans la limite du montant déposé ; le reste attend le dépôt suivant. Des espèces gardées au coffre restent donc de l'impôt impayé, visible par l'entreprise et au contrôle fiscal.
+
+Côté script, rien à faire de plus que passer `companyId` : le ticket est envoyé **après** le mouvement des espèces et ne bloque jamais le paiement. Si le site ne répond pas, le ticket attend dans une file (fichier `cash_register_queue.json` de la ressource, conservé au redémarrage) et est renvoyé toutes les 30 secondes, sans jamais être compté deux fois. Les envois sont journalisés dans `[banks]/[cash_register]/cash_register.csv` (`sadoj-logs`).
+
+> [!WARNING]
+> L'identifiant `companyId` doit figurer dans les identifiants en jeu de l'entreprise au MDT (cf. [Les entreprises](#les-entreprises)). Sinon, ses comptes sont introuvables et ses tickets ne sont rattachés à aucune entreprise : personne ne les voit et la taxe n'est jamais prélevée.
+>
+> `coffres.company_id` (`sadoj-inventory`) ne sert que si vous **ne précisez pas** le coffre : le serveur cherche alors le coffre de l'entreprise par cet identifiant. Il sert aussi, dans une répartition, à savoir à qui appartiennent les autres coffres. Si vous passez `safeNameForMoney`, ce coffre est pris comme celui de l'entreprise.
 
 ## Utilisation
 
@@ -253,7 +318,7 @@ Chaque ajout et retrait est enregistré dans les logs `[banks]/[wallet]/wallet.c
 <!-- tabs:start -->
 #### **Export (serveur)**
 ```lua
-local success --[[ boolean ]], errorMessage --[[ string|nil ]] = exports["sadoj-banks"]:TransferWalletToSafe(player --[[ integer ]], safes --[[ string|table ]], amount --[[ integer ]][, reason --[[ string ]]])
+local success --[[ boolean ]], errorMessage --[[ string|nil ]], parts --[[ table|nil ]] = exports["sadoj-banks"]:TransferWalletToSafe(player --[[ integer ]], safes --[[ string|table ]], amount --[[ integer ]][, reason --[[ string ]]])
 ```
 * **Paramètres:**
   * **player:** Server ID du joueur qui paie.
@@ -263,9 +328,43 @@ local success --[[ boolean ]], errorMessage --[[ string|nil ]] = exports["sadoj-
 * **Retour:**
   * **success:** `true` si les espèces ont été déplacées.
   * **errorMessage:** En cas d'échec, le message à afficher au joueur (espèces insuffisantes, coffre inexistant, répartition invalide…).
+  * **parts:** En cas de succès, les coffres crédités : `{ { safe, amount, balance }, ... }` (`balance` : solde du coffre après l'opération, `nil` si inconnu).
 <!-- tabs:end -->
 
 C'est ce qu'utilise le terminal pour un paiement en espèces : à utiliser quand votre script fait payer en espèces sans ouvrir le terminal. Tout ou rien : en cas d'échec, le joueur garde ses espèces.
+
+> [!WARNING]
+> `TransferWalletToSafe` ne crée **aucun ticket de caisse**. Pour un encaissement d'entreprise fait sans le terminal, inscrivez-le vous-même avec [`RecordCashReceipt`](#recordcashreceipt), sinon il échappe au journal de caisse et à la taxe sur les espèces.
+
+#### RecordCashReceipt
+<!-- tabs:start -->
+#### **Export (serveur)**
+```lua
+exports["sadoj-banks"]:RecordCashReceipt(player --[[ integer ]], direction --[[ string ]], parts --[[ table ]], total --[[ integer ]], reason --[[ string|nil ]], meta --[[ table ]])
+```
+* **Paramètres:**
+  * **player:** Server ID du joueur qui paie (ou reçoit).
+  * **direction:** `"in"` pour un encaissement (porte-monnaie → coffre), `"out"` pour un versement (coffre → porte-monnaie).
+  * **parts:** Coffres **de cette entreprise** : `{ { safe = string, amount = integer, balance = integer|nil }, ... }`. Le retour `parts` de `TransferWalletToSafe` convient tel quel s'il n'y a qu'une entreprise.
+  * **total:** Montant de tout le paiement. Supérieur à la somme des parts si le paiement a été réparti avec d'autres coffres (le ticket l'indique). Égal à la somme pour un versement (`"out"`).
+  * **reason:** Motif inscrit sur le ticket.
+  * **meta:**
+    * **companyId:** Identifiant en jeu de l'entreprise (obligatoire).
+    * **type:** (optionnel) Code du [type de transaction](#les-types-de-transaction).
+    * **resource:** (optionnel) Nom de votre ressource, inscrit sur le ticket.
+<!-- tabs:end -->
+
+Inscrit l'opération au [journal de caisse](#journal-de-caisse-et-taxe-sur-les-espèces) sans attendre le site. À appeler **uniquement après** un mouvement d'espèces réussi : le terminal le fait déjà pour vous.
+
+```lua
+-- serveur : encaissement en espèces sans le terminal
+local ok, err, parts = exports["sadoj-banks"]:TransferWalletToSafe(source, "pdm", 2500, "Réparation")
+if ok then
+    exports["sadoj-banks"]:RecordCashReceipt(source, "in", parts, 2500, "Réparation", {
+        companyId = "PDM", type = "garage", resource = GetCurrentResourceName(),
+    })
+end
+```
 
 ### Comptes bancaires
 
@@ -463,9 +562,10 @@ Le terminal fonctionne comme un TPE : le script demande une opération au joueur
 | --- | --- | --- |
 | Badge affiché | ↑ **DÉBIT** · Vous payez (rouge) | ↓ **CRÉDIT** · Vous recevez (vert) |
 | Montant affiché | `− $500` | `+ $500` |
-| Porte-monnaie | Les espèces vont du porte-monnaie **vers** le coffre `safeNameForMoney` | Les espèces vont **du** coffre `safeNameForMoney` vers le porte-monnaie |
-| Carte bancaire | Code PIN demandé, le compte de la carte est **débité** au profit de `accountNumberForTransaction` | Pas de PIN, le compte de la carte est **crédité** depuis `accountNumberForTransaction` |
-| Frais et taxes (carte) | Payés par le joueur | Payés par l'émetteur (`accountNumberForTransaction`) |
+| Porte-monnaie | Les espèces vont du porte-monnaie **vers** le coffre (de l'entreprise, ou `safeNameForMoney`) | Les espèces vont **du** coffre (de l'entreprise, ou `safeNameForMoney`) vers le porte-monnaie |
+| Carte bancaire | Code PIN demandé, le compte de la carte est **débité** au profit du compte de l'entreprise (ou `accountNumberForTransaction`) | Pas de PIN, le compte de la carte est **crédité** depuis le compte de l'entreprise (ou `accountNumberForTransaction`) |
+| Frais et taxes (carte) | Payés par le joueur | Payés par l'émetteur |
+| Espèces avec `companyId` | Ticket de caisse, taxe d'État due par l'entreprise | Ticket de caisse, pas de taxe |
 
 #### Payment
 <!-- tabs:start -->
@@ -501,13 +601,35 @@ local success --[[ boolean ]] = exports["sadoj-banks"]:Payout(amount --[[ intege
 
 #### Options du terminal
 
-- `accountNumberForTransaction`: Numéro du compte de l'autre partie (string), ou liste de parts (table). **Obligatoire** si `canUseCreditCards` vaut `true`.
+**TPE d'une entreprise** (recommandé dès que l'argent va à une entreprise) :
+
+- `companyId`: Identifiant en jeu de l'entreprise (`sadoj-jobs`), ex: `"PDM"` (string). Insensible à la casse, cherché parmi les identifiants en jeu de l'entreprise au MDT. Si vous ne les précisez pas, le serveur en déduit lui-même :
+  - le **coffre** : celui dont `coffres.company_id` est l'un de ses identifiants (s'il y en a plusieurs, le premier par nom, avec un avertissement console) ;
+  - le **compte** : son compte courant par défaut, cherché à la Pacific Bank, puis Fleeca, puis Lom (les comptes gelés sont ignorés).
+
+  Les paiements en espèces sont inscrits au [journal de caisse](#journal-de-caisse-et-taxe-sur-les-espèces). `"PNJ"` est refusé : pour un PNJ, passez les destinataires explicites.
+- `bankId`: (optionnel, avec `companyId`) Banque du compte qui encaisse ou qui verse : `"pacific"`, `"fleeca"` ou `"lom"` (string).
+
+Avec `companyId`, `safeNameForMoney` et `accountNumberForTransaction` sont **facultatifs** :
+
+- **un coffre (string)** : pris tel quel comme le coffre de l'entreprise, sans consulter `coffres.company_id` ;
+- **un numéro de compte (string)** : doit être un compte de l'entreprise, ce que le site sait toujours (le compte est refusé sinon) ;
+- **une liste de parts** (en `Payment` uniquement) [répartit le paiement](#répartition-dun-paiement-entre-plusieurs-comptes). Les parts sans destinataire, ou marquées `company = true`, sont celles de l'entreprise.
+
+**Destinataires explicites** (sans `companyId` : PNJ, ressource non migrée) :
+
+- `accountNumberForTransaction`: Numéro du compte de l'autre partie (string), ou liste de parts (table). **Obligatoire** si `canUseCreditCards` vaut `true` et sans `companyId`.
   - En `Payment` : le compte qui **encaisse** le paiement, ou une liste de parts pour [répartir le paiement entre plusieurs comptes](#répartition-dun-paiement-entre-plusieurs-comptes).
   - En `Payout` : le compte qui **verse** l'argent (un seul numéro de compte, pas de liste de parts).
-- `safeNameForMoney`: Nom du coffre de l'autre partie (string), ou liste de parts (table). **Obligatoire** si `canUseWallet` vaut `true`.
+- `safeNameForMoney`: Nom du coffre de l'autre partie (string), ou liste de parts (table). **Obligatoire** si `canUseWallet` vaut `true` et sans `companyId`.
   - En `Payment` : le coffre qui **reçoit** les espèces, ou une liste de parts pour [répartir le paiement entre plusieurs coffres](#répartition-dun-paiement-entre-plusieurs-comptes).
   - En `Payout` : le coffre d'où **sortent** les espèces (un seul nom de coffre, pas de liste de parts). Le versement est refusé si le coffre n'en contient pas assez.
-- `transactionType`: (optionnel) Code du [type de transaction](#les-types-de-transaction), ex: `"clothing"` (string). S'applique aux paiements **par carte** : la surtaxe du type s'ajoute à la taxe d'État, payée par le joueur en `Payment` et par l'émetteur en `Payout`. Sans effet en espèces.
+
+**Dans tous les cas** :
+
+- `transactionType`: (optionnel) Code du [type de transaction](#les-types-de-transaction), ex: `"clothing"` (string).
+  - Par carte : la surtaxe du type s'ajoute à la taxe d'État, payée par le joueur en `Payment` et par l'émetteur en `Payout`.
+  - En espèces avec `companyId` : inscrit sur le ticket de caisse, il fixe la taxe due par l'entreprise sur l'encaissement.
 - `dontUsePendingState`: Réservé, non utilisé actuellement (boolean).
 
 #### Comportement
@@ -517,19 +639,21 @@ local success --[[ boolean ]] = exports["sadoj-banks"]:Payout(amount --[[ intege
 - Si seul `canUseWallet` vaut `true`, aucune interface ne s'ouvre : les espèces sont directement transférées entre le porte-monnaie et le coffre.
 - En cas d'erreur (solde insuffisant, carte refusée, banque en maintenance…), le message s'affiche dans l'interface et le joueur peut choisir un autre moyen ou annuler. Le terminal ne se ferme qu'en cas de succès ou d'annulation (bouton ou touche `Échap`).
 - Seules les cartes présentes dans l'inventaire du joueur sont proposées.
+- Avec `companyId`, le coffre et le compte sont demandés au serveur à l'ouverture. Si l'un des deux est introuvable, ce moyen de paiement est **retiré du terminal** et un avertissement s'affiche dans la console F8. C'est le cas sans coffre indiqué et sans coffre à son `company_id`, sans compte utilisable, ou avec un compte qui n'est pas à l'entreprise. S'il ne reste aucun moyen, la fonction renvoie `false`.
+- Un coffre indiqué qui n'existe pas fait échouer le paiement en espèces : le joueur garde ses espèces.
+- En espèces, le serveur complète de nouveau la répartition au moment du paiement, à partir de ce que le script a demandé.
 
 > [!NOTE]
 > Le terminal **ne crée ni ne supprime jamais d'argent** : en espèces il passe du porte-monnaie au coffre (ou l'inverse), par carte d'un compte à l'autre. Votre script n'a donc rien à créditer ou débiter lui-même après un succès.
 
-**Exemple** : un magasin de vêtements fait payer un article.
+**Exemple** : un magasin de vêtements fait payer un article. Avec `companyId`, pas besoin de chercher le compte ni le coffre : le serveur les trouve, et un paiement en espèces arrive au journal de caisse de l'entreprise.
 
 ```lua
 -- client
 CreateThread(function()
     local success = exports["sadoj-banks"]:Payment(250, "Binco - Veste en cuir", {
-        safeNameForMoney            = "binco_vespucci",   -- coffre du magasin (espèces)
-        accountNumberForTransaction = shopAccountNumber,  -- compte du magasin (carte), récupéré côté serveur
-        transactionType             = "clothing",         -- surtaxe « Vêtements » si payé par carte
+        companyId       = "binco",     -- identifiant en jeu de l'entreprise : coffre, compte et ticket de caisse
+        transactionType = "clothing",  -- surtaxe « Vêtements » (carte) / taxe due par l'entreprise (espèces)
     }, true, true)
 
     if success then
@@ -540,19 +664,35 @@ CreateThread(function()
 end)
 ```
 
-**Exemple** : un concessionnaire vend un véhicule. 60 % du prix va à l'entreprise, le reste au fournisseur PNJ, que le joueur paie par carte ou en espèces. Par carte, la taxe d'État (surtaxe « Véhicules » comprise) et les frais bancaires s'ajoutent au prix et sont payés par le joueur.
+**Exemple** : l'entreprise a plusieurs coffres et des comptes dans deux banques ; on choisit lesquels utiliser.
+
+```lua
+-- client
+local success = exports["sadoj-banks"]:Payment(1200, "Bean Machine - Commande", {
+    companyId        = "bean-machine",
+    safeNameForMoney = "beanmachine_comptoir", -- coffre de l'entreprise, pris tel quel
+    bankId           = "fleeca",               -- compte courant de l'entreprise à la Fleeca Bank
+    transactionType  = "food",
+}, true, true)
+```
+
+**Exemple** : un concessionnaire vend un véhicule. 60 % du prix va à l'entreprise, le reste au fournisseur PNJ, que le joueur paie par carte ou en espèces.
+
+- Par carte, la taxe d'État (surtaxe « Véhicules » comprise) et les frais bancaires s'ajoutent au prix et sont payés par le joueur.
+- En espèces, la part de PDM ($51,000) a un ticket de caisse dans son journal, et PDM doit la taxe d'État dessus. La part du fournisseur PNJ n'a pas de ticket.
 
 ```lua
 -- client
 CreateThread(function()
     local success = exports["sadoj-banks"]:Payment(85000, "PDM - Sultan RS", {
+        companyId = "PDM",
         accountNumberForTransaction = {
-            { account = companyAccountNumber, percent = 60 }, -- compte de l'entreprise, récupéré côté serveur
-            { account = "PNJ-SA-000001" },                    -- compte PNJ du fournisseur : reçoit le reste (40 %)
+            { percent = 60 },                -- compte courant de PDM (trouvé par le serveur)
+            { account = "PNJ-SA-000001" },   -- compte PNJ du fournisseur : reçoit le reste (40 %)
         },
         safeNameForMoney = {
-            { safe = "pdm",           percent = 60 },         -- coffre de l'entreprise
-            { safe = "pnj_vehicules" },                       -- coffre du fournisseur PNJ : le reste (40 %)
+            { safe = "pdm", company = true, percent = 60 },  -- coffre de PDM
+            { safe = "pnj_vehicules" },      -- coffre du fournisseur PNJ : le reste (40 %)
         },
         transactionType = "vehicle",
     }, true, true)
@@ -563,14 +703,14 @@ CreateThread(function()
 end)
 ```
 
-**Exemple** : une entreprise rachète un objet à un joueur.
+**Exemple** : une entreprise rachète un objet à un joueur, par carte ou en espèces depuis son coffre.
 
 ```lua
 -- client
 CreateThread(function()
     local success = exports["sadoj-banks"]:Payout(1200, "Rachat de ferraille", {
-        accountNumberForTransaction = companyAccountNumber, -- compte de l'entreprise qui paie
-    }, false, true)
+        companyId = "scrapyard",  -- l'entreprise paie depuis son compte (carte) ou son coffre (espèces)
+    }, true, true)
 
     if success then
         -- retirer l'objet de l'inventaire du joueur
@@ -579,7 +719,34 @@ end)
 ```
 
 > [!TIP]
-> Le compte d'une entreprise n'est connu que côté serveur : récupérez-le avec `GetDefaultAccountNumber` dans un callback serveur (`sadoj-callbacks`) avant d'ouvrir le terminal.
+> Sans `companyId`, le compte d'une entreprise n'est connu que côté serveur : il faut le récupérer avec `GetDefaultAccountNumber` dans un callback serveur (`sadoj-callbacks`) avant d'ouvrir le terminal. Avec `companyId`, le terminal s'en charge.
+
+#### ResolvePaymentTarget
+<!-- tabs:start -->
+#### **Export (serveur)**
+```lua
+local target --[[ table ]] = exports["sadoj-banks"]:ResolvePaymentTarget(companyId --[[ string ]][, options --[[ table ]]])
+```
+* **Paramètres:**
+  * **companyId:** Identifiant en jeu de l'entreprise.
+  * **options:** (optionnel)
+    * **wallet:** `true` pour chercher son coffre.
+    * **card:** `true` pour chercher son compte.
+    * **safeName:** (optionnel) Coffre de l'entreprise (pris tel quel), ou liste de parts dont les parts sans `safe` ou marquées `company = true` sont celles de l'entreprise. Absent : coffre trouvé par `coffres.company_id`.
+    * **accountNumber:** (optionnel) Compte souhaité (vérifié comme appartenant à l'entreprise), ou liste de parts dont les parts sans `account` sont celles de l'entreprise.
+    * **bankId:** (optionnel) Banque du compte.
+* **Retour:**
+  * **target:** `{ companyId, safe, safeError, companySafes, account, accountError }`. `safe` / `account` contiennent un nom de coffre / numéro de compte, ou la liste de parts complétée. `companySafes` contient les coffres de l'entreprise parmi `safe` (`{ [nom en minuscules] = true }`). Ils valent `nil` s'ils sont introuvables, avec la raison dans `safeError` / `accountError`.
+<!-- tabs:end -->
+
+C'est ce que fait le terminal à l'ouverture avec `companyId`. Utile pour vérifier la configuration d'un magasin, ou pour retrouver le coffre d'une entreprise avant un [`TransferWalletToSafe`](#transferwallettosafe).
+
+```lua
+-- serveur : vérifier qu'un TPE d'entreprise est bien configuré
+local t = exports["sadoj-banks"]:ResolvePaymentTarget("PDM", { wallet = true, card = true })
+print("coffre :", t.safe or t.safeError)
+print("compte :", t.account or t.accountError)
+```
 
 ### Distributeurs automatiques (DAB)
 
