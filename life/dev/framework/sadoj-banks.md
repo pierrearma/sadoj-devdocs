@@ -93,6 +93,37 @@ Ses métadonnées:
 
 Le code PIN n'est jamais stocké sur l'item : il est vérifié par le site.
 
+### Les types de transaction
+
+Un paiement peut être **typé** (location, vêtements, véhicule…). Le type est affiché dans l'historique des comptes sur le site, et le Gouvernement peut fixer pour chaque type une **surtaxe** qui s'ajoute au taux de taxe d'État global.
+
+Par exemple, avec une taxe globale de 5 % et une surtaxe de 10 % sur `rental` :
+
+| Paiement                  | Taxe appliquée |
+| ------------------------- | -------------- |
+| Sans type                 | 5 %            |
+| `options.type = "rental"` | 15 %           |
+
+Chaque type est désigné par un **code** :
+
+| Code       | Type         |
+| ---------- | ------------ |
+| `rental`   | Location     |
+| `clothing` | Vêtements    |
+| `vehicle`  | Véhicules    |
+| `food`     | Alimentation |
+| `fuel`     | Carburant    |
+
+La liste n'est pas figée dans le script : les types sont créés sur le site (Administration générale → Types de transaction) et leurs surtaxes sont fixées par le Gouvernement (Paramètres fiscaux). Les codes ci-dessus sont ceux créés à l'installation. Pour la liste à jour, utilisez [`GetTransactionTypes`](#gettransactiontypes) ou la commande console `banks:types`.
+
+- Le code est insensible à la casse (`"Clothing"` = `"clothing"`).
+- Un code inconnu ou désactivé **ne bloque pas** le paiement : il passe sans type, au taux global, et un avertissement s'affiche dans la console serveur.
+- Les paiements en espèces ne sont pas concernés (aucune taxe).
+- Les paiements vers le Trésor public restent exonérés de taxe.
+
+> [!TIP]
+> Le code d'un type ne change plus une fois qu'il a servi : vous pouvez l'écrire en dur dans vos scripts.
+
 ## Utilisation
 
 ### Porte-monnaie
@@ -227,7 +258,7 @@ end
 <!-- tabs:start -->
 #### **Export (serveur)**
 ```lua
-local state --[[ integer ]], result --[[ integer|string ]] = exports["sadoj-banks"]:Transaction(accountDebit --[[ string ]], accountCredit --[[ string ]], amount --[[ integer ]], reason --[[ string ]], options --[[ table ]])
+local state --[[ integer ]], result --[[ integer|string ]], details --[[ table|nil ]] = exports["sadoj-banks"]:Transaction(accountDebit --[[ string ]], accountCredit --[[ string ]], amount --[[ integer ]], reason --[[ string ]], options --[[ table ]])
 ```
 * **Paramètres:**
   * **accountDebit:** Numéro du compte débité.
@@ -238,15 +269,22 @@ local state --[[ integer ]], result --[[ integer|string ]] = exports["sadoj-bank
     * **pin:** (optionnel) Code PIN de la carte, vérifié uniquement si `cardNumber` est aussi fourni.
     * **cardNumber:** (optionnel) Numéro de la carte utilisée, doit être liée au compte débité.
     * **direction:** (optionnel) `"debit"` (par défaut) ou `"credit"`. En `"credit"`, les messages d'erreur ne révèlent rien du compte débité (utile quand c'est le compte d'un tiers, ex: versement d'une entreprise à un joueur).
+    * **type:** (optionnel) Code du [type de transaction](#les-types-de-transaction), ex: `"clothing"`. Ajoute la surtaxe du type à la taxe d'État.
 * **Retour:**
   * **state:**
     * `1`: Succès
     * `-1`: Échec
   * **result:** En cas de succès l'identifiant de la transaction, en cas d'échec le message d'erreur (à afficher au joueur).
+  * **details:** En cas de succès uniquement, le détail des prélèvements :
+    * **transactionId:** Identifiant de la transaction.
+    * **feeAmount / feeRate:** Frais bancaires prélevés ($) et leur taux (%).
+    * **taxAmount / taxRate:** Taxe d'État prélevée ($) et son taux total (%), surtaxe du type comprise.
+    * **taxSurtaxRate:** Part du taux due au type de transaction (%).
+    * **transactionType:** Code du type retenu, `nil` si la transaction n'est pas typée (aucun type demandé, ou code inconnu / désactivé).
 
 #### **Export (client)**
 ```lua
-local state --[[ integer ]], result --[[ integer|string ]] = exports["sadoj-banks"]:Transaction(accountDebit --[[ string ]], accountCredit --[[ string ]], amount --[[ integer ]], reason --[[ string ]][, options --[[ table ]]])
+local state --[[ integer ]], result --[[ integer|string ]], details --[[ table|nil ]] = exports["sadoj-banks"]:Transaction(accountDebit --[[ string ]], accountCredit --[[ string ]], amount --[[ integer ]], reason --[[ string ]][, options --[[ table ]]])
 ```
 Mêmes paramètres et retour que l'export serveur, l'opération est relayée au serveur.
 <!-- tabs:end -->
@@ -261,7 +299,7 @@ La transaction est refusée si:
 - Le compte débité n'a pas les fonds suffisants
 
 > [!NOTE]
-> Les **frais bancaires** (banque du compte débité) et la **taxe d'État** sont **ajoutés** au montant et prélevés sur le compte débité. Le compte crédité reçoit exactement `amount`. Le message d'échec pour fonds insuffisants détaille montant, frais et taxe.
+> Les **frais bancaires** (banque du compte débité) et la **taxe d'État** (surtaxe du type comprise) sont **ajoutés** au montant et prélevés sur le compte débité. Le compte crédité reçoit exactement `amount`. Le message d'échec pour fonds insuffisants détaille montant, frais et taxe.
 
 **Exemple** : une entreprise paie une prime à un joueur.
 
@@ -276,6 +314,54 @@ if from and to then
         print("Virement effectué, transaction n°" .. result)
     else
         print("Virement refusé : " .. result)
+    end
+end
+```
+
+**Exemple** : une entreprise paie le loyer de son local, avec la surtaxe des locations.
+
+```lua
+-- serveur
+local state, result, details = exports["sadoj-banks"]:Transaction(from, to, 800, "Loyer local - semaine 45", { type = "rental" })
+if state == 1 then
+    print(("Taxe prélevée : $%s (%s %%)"):format(details.taxAmount, details.taxRate))
+end
+```
+
+#### GetTransactionTypes
+<!-- tabs:start -->
+#### **Export (serveur)**
+```lua
+local data --[[ table|nil ]] = exports["sadoj-banks"]:GetTransactionTypes([forceRefresh --[[ boolean ]]])
+```
+* **Paramètres:**
+  * **forceRefresh:** (optionnel) `true` pour interroger le site même si la liste est en cache.
+* **Retour:**
+  * **data:** `nil` si le site ne répond pas et qu'aucune liste n'a encore été chargée. Sinon :
+    * **taxRate:** Taux de taxe d'État global (%).
+    * **types:** Liste des types **actifs**, chacun avec :
+      * **code:** Code à passer en `options.type` / `options.transactionType` (string).
+      * **label:** Libellé affiché sur le site, ex: `Vêtements` (string).
+      * **surtaxRate:** Surtaxe du type (%).
+      * **totalTaxRate:** Taux total appliqué à ce type (%), plafonné à 100.
+
+#### **Export (client)**
+```lua
+local data --[[ table|nil ]] = exports["sadoj-banks"]:GetTransactionTypes()
+```
+Même retour que l'export serveur, la liste est demandée au serveur.
+<!-- tabs:end -->
+
+La liste est gardée en cache 60 secondes. Si le site ne répond pas, la dernière liste connue est renvoyée.
+
+**Exemple** : afficher la taxe d'un article avant de le faire payer.
+
+```lua
+-- serveur
+local data = exports["sadoj-banks"]:GetTransactionTypes()
+for _, t in ipairs(data and data.types or {}) do
+    if t.code == "clothing" then
+        print(("Les vêtements sont taxés à %s %%"):format(t.totalTaxRate))
     end
 end
 ```
@@ -332,6 +418,7 @@ local success --[[ boolean ]] = exports["sadoj-banks"]:Payout(amount --[[ intege
 - `safeNameForMoney`: Nom du coffre de l'autre partie (string). **Obligatoire** si `canUseWallet` vaut `true`.
   - En `Payment` : le coffre qui **reçoit** les espèces.
   - En `Payout` : le coffre d'où **sortent** les espèces. Le versement est refusé si le coffre n'en contient pas assez.
+- `transactionType`: (optionnel) Code du [type de transaction](#les-types-de-transaction), ex: `"clothing"` (string). S'applique aux paiements **par carte** : la surtaxe du type s'ajoute à la taxe d'État, payée par le joueur en `Payment` et par l'émetteur en `Payout`. Sans effet en espèces.
 - `dontUsePendingState`: Réservé, non utilisé actuellement (boolean).
 
 #### Comportement
@@ -345,14 +432,15 @@ local success --[[ boolean ]] = exports["sadoj-banks"]:Payout(amount --[[ intege
 > [!NOTE]
 > Le terminal **ne crée ni ne supprime jamais d'argent** : en espèces il passe du porte-monnaie au coffre (ou l'inverse), par carte d'un compte à l'autre. Votre script n'a donc rien à créditer ou débiter lui-même après un succès.
 
-**Exemple** : un commerçant fait payer un article.
+**Exemple** : un magasin de vêtements fait payer un article.
 
 ```lua
 -- client
 CreateThread(function()
-    local success = exports["sadoj-banks"]:Payment(250, "Superette 24/7", {
-        safeNameForMoney            = "superette_grove",  -- coffre du magasin (espèces)
+    local success = exports["sadoj-banks"]:Payment(250, "Binco - Veste en cuir", {
+        safeNameForMoney            = "binco_vespucci",   -- coffre du magasin (espèces)
         accountNumberForTransaction = shopAccountNumber,  -- compte du magasin (carte), récupéré côté serveur
+        transactionType             = "clothing",         -- surtaxe « Vêtements » si payé par carte
     }, true, true)
 
     if success then
