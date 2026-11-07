@@ -22,8 +22,6 @@ Le script gère tout ce qui touche aux vêtements :
 - les options des vêtements (protection balistique, vision nocturne, masque à gaz, empreintes cachées…) ;
 - le menu d'administration et le studio photo (outils de dev).
 
----
-
 ## Énumérations
 
 Définies dans `config/enums.lua` (partagé).
@@ -60,8 +58,6 @@ Définies dans `config/enums.lua` (partagé).
 - `NONE`: `-1`
 - `MALE`: `GetHashKey("mp_m_freemode_01")`
 - `FEMALE`: `GetHashKey("mp_f_freemode_01")`
-
----
 
 ## Structures
 
@@ -106,8 +102,6 @@ Utilisé par les vêtements portés et par les tenues. Indexé par type puis par
 | Joueur | l'identifiant du joueur (`sadoj-core`) |
 | Véhicule | `vehicle:<identifiant du véhicule>` |
 | Dressing | `dressing` |
-
----
 
 ## Utilisation
 
@@ -905,8 +899,6 @@ local success --[[ boolean ]] = exports["sadoj-clothes"]:GiveCompanyKitItems(com
 ?> S'arrête quand la limite d'inventaire de la cible est atteinte.
 <!-- tabs:end -->
 
----
-
 ## Événements
 
 ### sadoj-clothes:server:OnCurrentClothesUpdate
@@ -944,8 +936,6 @@ TriggerServerEvent("sadoj-clothes:server:AddListenerToInventory", name --[[ stri
 TriggerServerEvent("sadoj-clothes:server:RemoveListenerToInventory", name --[[ string ]])
 ```
 <!-- tabs:end -->
-
----
 
 ### Limite d'inventaire
 
