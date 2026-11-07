@@ -70,7 +70,17 @@ Les comptes des entreprises sont chargés au démarrage du script (nouvel essai 
 
 ### Les cartes bancaires
 
-Une carte est un item `credit_card` de `sadoj-inventory`. Elle est créée par le site quand un banquier émet une carte, et déposée dans le coffre `PacificLS`. Ses métadonnées:
+Une carte est un item `credit_card` de `sadoj-inventory`. Elle est créée par le site quand un banquier émet une carte, et déposée dans le coffre de la banque du compte, défini dans `Config.CardSafes` (`config/config.lua`) :
+
+```lua
+Config.CardSafes = {
+    pacific = "PacificLS",
+}
+```
+
+Si la banque du compte n'a pas de coffre dans `Config.CardSafes`, l'émission est refusée : le site affiche l'erreur et aucune carte n'est créée.
+
+Ses métadonnées:
 
 | Métadonnée         | Affichée | Contenu                                         |
 | ------------------ | -------- | ----------------------------------------------- |
@@ -334,9 +344,6 @@ local success --[[ boolean ]] = exports["sadoj-banks"]:Payout(amount --[[ intege
 
 > [!NOTE]
 > Le terminal **ne crée ni ne supprime jamais d'argent** : en espèces il passe du porte-monnaie au coffre (ou l'inverse), par carte d'un compte à l'autre. Votre script n'a donc rien à créditer ou débiter lui-même après un succès.
-
-> [!WARNING]
-> Les coffres ne sont pas encore reliés : en attendant, **les opérations en espèces du terminal sont refusées** avec le message « Les paiements en espèces sont indisponibles pour le moment ». Les paiements par carte fonctionnent normalement.
 
 **Exemple** : un commerçant fait payer un article.
 
