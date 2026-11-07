@@ -28,8 +28,6 @@ Toute l'autorité est côté serveur : le dossier médical (`Patients[src]`) est
 >
 > Pour savoir si un ped est hors de combat, utilisez l'export [`IsPedDead`](#savoir-si-un-ped-est-hors-de-combat) ou incluez le fichier [`lib/natives.lua`](#remplacer-les-natives-de-mort) dans votre ressource.
 
----
-
 ## États
 
 | État | Valeur | Description |
@@ -41,8 +39,6 @@ Toute l'autorité est côté serveur : le dossier médical (`Patients[src]`) est
 | Mort | `"dead"` | **PNJ uniquement** : un joueur n'est jamais déclaré mort. |
 
 Parcours type d'un joueur : `alive` → `down` → `unconscious` → (`arrest` → massage cardiaque → `unconscious`) → réveil → `alive`.
-
----
 
 ## Remplacer les natives de mort
 
@@ -76,8 +72,6 @@ Dans la ressource qui l'inclut uniquement, ce fichier redéfinit :
 > Ne **jamais** inclure ce fichier dans `sadoj-medical`, `sadoj-stretchers`, `sadoj-ui`, `spawnmanager` ou `baseevents` : ces ressources ont besoin des vraies natives.
 >
 > `SetEntityHealth(ped, GetEntityHealth(ped) - x)` sur un ped au sol est ignoré au lieu de le tuer nativement (ce que le serveur traiterait comme un coup fatal).
-
----
 
 ## Utilisation
 
@@ -426,8 +420,6 @@ local zone --[[ nil|string ]] = exports["sadoj-medical"]:GetLastDamageZone()
 
 <!-- tabs:end -->
 
----
-
 ## Supports (brancards…)
 
 sadoj-medical ne gère aucun modèle et **n'attache rien** : la ressource qui gère l'objet (par exemple `sadoj-stretchers`) déclare l'installation du patient, attache et anime le ped elle-même. Tant qu'un patient est installé, sadoj-medical cesse de piloter sa posture (animation au sol, ragdoll, chute).
@@ -515,8 +507,6 @@ local ok --[[ boolean ]], message --[[ nil|string ]] = exports["sadoj-medical"]:
 
 Le support est aussi retiré automatiquement : quand le patient repasse debout, quand le joueur se relève, ou quand l'entité support disparaît ou s'éloigne du patient. Chaque changement est annoncé par l'événement [`sadoj-medical:server:supportChanged`](#événements).
 
----
-
 ## Événements
 
 Événements serveur locaux (`AddEventHandler`, non réseau) :
@@ -567,8 +557,6 @@ end)
 
 <!-- tabs:end -->
 
----
-
 ## Preuves
 
 sadoj-medical produit lui-même les preuves liées aux blessures, via `sadoj-evidences` :
@@ -578,8 +566,6 @@ sadoj-medical produit lui-même les preuves liées aux blessures, via `sadoj-evi
 * quand un hôpital ou un médecin PNJ soigne une plaie par balle, un appel générique est envoyé à la police (`sadoj-dispatch`) et les balles sont déposées dans le coffre de l'établissement (`bulletSafe`, cf. `config/locations.lua`).
 
 Les autres ressources n'ont donc pas à détecter elles-mêmes les blessures pour créer ces preuves.
-
----
 
 ## Commandes
 
@@ -592,8 +578,6 @@ Les autres ressources n'ont donc pas à détecter elles-mêmes les blessures pou
 | `/fullrevive [id]` | Admin | Relève (même en arrêt cardiaque) et supprime toutes les blessures. |
 
 Les commandes admin demandent l'ACE `command.medical_admin` (`ServerConfig.AdminAce`) et sont utilisables depuis la console. Sans `id`, elles ciblent le joueur qui les tape.
-
----
 
 ## Valeurs de référence
 

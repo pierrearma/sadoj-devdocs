@@ -28,8 +28,6 @@ Le système gère également le maintien de touche (appui long avec barre de pro
 > * **Gérer les interactions contextuelles :**
 >   N'ajoutez pas d'interactions permanentes si elles ne sont utiles que dans un scénario ou un contexte précis (ex: braquage en cours, étape d'un métier, entité éphémère). Ajoutez l'interaction au début du contexte et supprimez-la immédiatement (`RemoveInteraction` / `RemoveInteractionByEntity`) dès que le scénario prend fin ou que l'entité est détruite.
 
----
-
 ## Fonctionnalités
 
 * **Points indicateurs (Ring dots)** : Affichage d'un anneau blanc discret sur chaque point d'interaction situé à portée du joueur.
@@ -51,8 +49,6 @@ Le système gère également le maintien de touche (appui long avec barre de pro
 * **Système de verrouillage sécurisé (`Disable` / `Enable`)** : Utilisation de jetons de verrouillage multiples (`lockId`) afin d'éviter tout conflit de déblocage intempestif entre plusieurs ressources.
 * **Nettoyage automatique** : Toutes les interactions enregistrées par une ressource sont automatiquement supprimées lors de l'arrêt de celle-ci (`onClientResourceStop`).
 
----
-
 ## Contrôles
 
 | Périphérique | Touche / Action | Rôle |
@@ -63,8 +59,6 @@ Le système gère également le maintien de touche (appui long avec barre de pro
 | **Clavier** | `Flèche Haut` / `Flèche Bas` ou `Molette souris` | Faire défiler les options d'un point |
 | **Manette** | `BMD Haut` / `BMD Bas` | Faire défiler les options d'un point |
 
----
-
 ## Distances et décalages
 
 | Paramètre | Description | Valeur par défaut |
@@ -74,8 +68,6 @@ Le système gère également le maintien de touche (appui long avec barre de pro
 | `offset` | Décalage `vec3` appliqué aux coordonnées du point par rapport à l'entité ou au bone. | `vec3(0.0, 0.0, 0.0)` |
 | `entityOffset` | *(Sur les bones uniquement)* Si défini sur `true`, l'orientation de `offset` est calculée par rapport à la rotation de l'entité complète et non selon la rotation locale de l'os. | `false` |
 | `directionalOffset` | *(Sur les bones uniquement)* Si défini sur `true`, oriente automatiquement l'offset vers l'extérieur de l'entité selon sa position (inverse l'axe Y selon que le bone est situé à l'avant ou à l'arrière, et l'axe X selon la droite ou la gauche). Idéal pour les capots et coffres (moteur arrière / frunk). Active également l'orientation de l'entité. | `false` |
-
----
 
 ## Structure des options
 
@@ -111,8 +103,6 @@ Chaque interaction prend en paramètre un tableau `options` contenant une ou plu
 }
 ```
 
----
-
 ## Gestion des bones et listes de priorité
 
 Lors de l'utilisation de `AddEntityBoneInteraction` ou de `AddGlobal*BoneInteraction`, le paramètre `bone` (ou `bones`) peut être soit un nom d'os unique (`string`), soit une **liste ordonnée de priorité**.
@@ -142,8 +132,6 @@ exports['sadoj-interact']:AddGlobalVehicleBoneInteraction({
     },
 })
 ```
-
----
 
 ## Utilisation
 
@@ -180,8 +168,6 @@ local id --[[ number ]] = exports['sadoj-interact']:AddInteraction({
 
 <!-- tabs:end -->
 
----
-
 ### AddLocalEntityInteraction
 
 Ajoute une interaction sur une entité locale côté client (non synchronisée sur le réseau).
@@ -213,8 +199,6 @@ local id --[[ number ]] = exports['sadoj-interact']:AddLocalEntityInteraction({
   * **id:** Identifiant numérique unique de l'interaction.
 
 <!-- tabs:end -->
-
----
 
 ### AddEntityInteraction
 
@@ -248,8 +232,6 @@ local id --[[ number ]] = exports['sadoj-interact']:AddEntityInteraction({
   * **id:** Identifiant numérique unique de l'interaction.
 
 <!-- tabs:end -->
-
----
 
 ### AddEntityBoneInteraction
 
@@ -286,8 +268,6 @@ local id --[[ number ]] = exports['sadoj-interact']:AddEntityBoneInteraction({
 
 <!-- tabs:end -->
 
----
-
 ### AddModelInteraction
 
 Ajoute un point d'interaction sur **toutes les entités créées dans le monde** correspondant à une liste de modèles de props/objets. Les distances de détection et d'interaction sont ajustées automatiquement selon les dimensions des modèles fournis.
@@ -323,8 +303,6 @@ local id --[[ number ]] = exports['sadoj-interact']:AddModelInteraction({
   * **id:** Identifiant numérique unique de l'interaction.
 
 <!-- tabs:end -->
-
----
 
 ## Interactions globales
 
@@ -364,8 +342,6 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalObjectInteraction({
 
 <!-- tabs:end -->
 
----
-
 ### AddGlobalPedInteraction
 
 Ajoute des options globales à tous les peds non-joueurs (PNJ).
@@ -400,8 +376,6 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalPedInteraction({
 
 <!-- tabs:end -->
 
----
-
 ### AddGlobalPedBoneInteraction
 
 Ajoute une option globale sur un os spécifique de tous les peds non-joueurs.
@@ -435,8 +409,6 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalPedBoneInteraction(
 
 <!-- tabs:end -->
 
----
-
 ### AddGlobalPlayerInteraction
 
 Ajoute des options globales à tous les autres joueurs à proximité.
@@ -469,8 +441,6 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalPlayerInteraction({
   * **id:** Identifiant numérique unique de l'interaction.
 
 <!-- tabs:end -->
-
----
 
 ### AddGlobalPlayerBoneInteraction
 
@@ -507,8 +477,6 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalPlayerBoneInteracti
 
 <!-- tabs:end -->
 
----
-
 ### AddGlobalVehicleInteraction
 
 Ajoute des options globales à tous les véhicules.
@@ -540,8 +508,6 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalVehicleInteraction(
   * **id:** Identifiant numérique unique de l'interaction.
 
 <!-- tabs:end -->
-
----
 
 ### AddGlobalVehicleBoneInteraction
 
@@ -584,8 +550,6 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalVehicleBoneInteract
 
 <!-- tabs:end -->
 
----
-
 ## Modification et suppression
 
 > [!TIP]
@@ -608,8 +572,6 @@ exports['sadoj-interact']:RemoveInteraction(id --[[ number ]])
 
 <!-- tabs:end -->
 
----
-
 ### RemoveInteractionByEntity
 
 Supprime toutes les interactions enregistrées sur une entité spécifique (y compris les interactions rattachées à ses bones).
@@ -626,8 +588,6 @@ exports['sadoj-interact']:RemoveInteractionByEntity(entity --[[ number ]])
   * **entity:** Handle de l'entité.
 
 <!-- tabs:end -->
-
----
 
 ### RemoveInteractionOption
 
@@ -647,8 +607,6 @@ exports['sadoj-interact']:RemoveInteractionOption(id --[[ number ]], optionName 
 
 <!-- tabs:end -->
 
----
-
 ### UpdateInteraction
 
 Remplace l'intégralité de la liste des options d'une interaction existante sans modifier ses coordonnées ou son ancrage.
@@ -666,8 +624,6 @@ exports['sadoj-interact']:UpdateInteraction(id --[[ number ]], newOptions --[[ t
   * **newOptions:** Nouveau tableau d'options (ou une seule table d'option).
 
 <!-- tabs:end -->
-
----
 
 ## Verrouillage et désactivation
 
@@ -690,8 +646,6 @@ local lockId --[[ number ]] = exports['sadoj-interact']:Disable()
 
 <!-- tabs:end -->
 
----
-
 ### Enable
 
 Lève un verrou spécifique ou débloque tous les verrous posés par la ressource courante. Les interactions redeviennent actives dès qu'il ne subsiste plus aucun verrou.
@@ -710,8 +664,6 @@ exports['sadoj-interact']:Enable(lockId --[[ number (facultatif) ]])
 
 <!-- tabs:end -->
 
----
-
 ### IsDisabled
 
 Indique si le système d'interaction est actuellement désactivé (par au moins un verrou ou par l'état `interactionsDisabled`).
@@ -728,8 +680,6 @@ local disabled --[[ boolean ]] = exports['sadoj-interact']:IsDisabled()
   * **disabled:** `true` si les interactions sont bloquées, `false` si elles sont actives.
 
 <!-- tabs:end -->
-
----
 
 ## Gestion du réticule (Crosshair)
 
@@ -755,8 +705,6 @@ exports['sadoj-interact']:SetCrosshair(true)
   * **state:** Booléen `true` pour afficher le réticule, `false` pour le masquer.
 
 <!-- tabs:end -->
-
----
 
 ### IsCrosshairEnabled
 

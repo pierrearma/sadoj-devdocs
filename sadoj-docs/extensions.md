@@ -53,8 +53,6 @@
 * [docsify-example-panels](https://vagnerdomingues.github.io/docsify-example-panels/#/) : Permet de créer des panneaux d'exemples interactifs.
 * [docsify-footer](https://github.com/erickjx/docsify-footer-enh) : Ajoute un pied de page personnalisé en bas de chaque page.
 
----
-
 ## Modules personnalisés (développés pour le site)
 
 * **theme-switcher.js** :
