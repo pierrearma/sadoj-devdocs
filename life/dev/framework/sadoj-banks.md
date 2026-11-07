@@ -106,13 +106,16 @@ Par exemple, avec une taxe globale de 5 % et une surtaxe de 10 % sur `rental` :
 
 Chaque type est désigné par un **code** :
 
-| Code       | Type         |
-| ---------- | ------------ |
-| `rental`   | Location     |
-| `clothing` | Vêtements    |
-| `vehicle`  | Véhicules    |
-| `food`     | Alimentation |
-| `fuel`     | Carburant    |
+| Code          | Type         |
+| ------------- | ------------ |
+| `rental`      | Location     |
+| `clothing`    | Vêtements    |
+| `vehicle`     | Véhicules    |
+| `food`        | Alimentation |
+| `fuel`        | Carburant    |
+| `garage`      | Garage       |
+| `hairdresser` | Coiffeur     |
+| `tattoo`      | Tatouages    |
 
 La liste n'est pas figée dans le script : les types sont créés sur le site (Administration générale → Types de transaction) et leurs surtaxes sont fixées par le Gouvernement (Paramètres fiscaux). Les codes ci-dessus sont ceux créés à l'installation. Pour la liste à jour, utilisez [`GetTransactionTypes`](#gettransactiontypes) ou la commande console `banks:types`.
 
@@ -123,6 +126,44 @@ La liste n'est pas figée dans le script : les types sont créés sur le site (A
 
 > [!TIP]
 > Le code d'un type ne change plus une fois qu'il a servi : vous pouvez l'écrire en dur dans vos scripts.
+
+### Répartition d'un paiement entre plusieurs comptes
+
+Un paiement par carte peut être versé sur **plusieurs comptes** à la fois. Par exemple, la vente d'un véhicule : une part pour l'entreprise, le reste pour le compte PNJ du fournisseur.
+
+Au lieu d'un numéro de compte, passez une liste de parts (`accountCredit` de [`Transaction`](#transaction), `accountNumberForTransaction` du [terminal](#options-du-terminal)) :
+
+```lua
+{
+    { account = "PAC-700464",    percent = 60 },   -- 60 % du montant
+    { account = "PNJ-SA-000002", amount = 5000 },  -- montant fixe : $5,000
+    { account = "PNJ-SA-000001" },                 -- ni percent ni amount : reçoit le reste
+}
+```
+
+Chaque part contient :
+
+- `account`: Numéro du compte qui reçoit la part (string).
+- `percent`: (optionnel) Pourcentage du montant, entre 0 et 100, décimales permises (number).
+- `amount`: (optionnel) Montant fixe, entier strictement positif (integer).
+
+Une part sans `percent` ni `amount` reçoit **le reste**. Une seule part peut être dans ce cas.
+
+Règles :
+
+- 10 comptes au maximum.
+- Sans part « reste », les pourcentages et montants fixes doivent couvrir **exactement** le montant (100 %). Avec une part « reste », ils ne doivent pas le dépasser.
+- Pas de centimes : les dollars perdus à l'arrondi des pourcentages sont redistribués, la somme des parts vaut toujours le montant payé. Une part qui tombe à $0 est ignorée.
+- Un même compte cité deux fois reçoit la somme de ses parts.
+- Uniquement pour un **paiement** (`Payment`, ou `Transaction` en `direction = "debit"`). Un versement (`Payout`, `direction = "credit"`) part toujours d'un seul compte.
+- Une répartition invalide est refusée avant tout débit, avec un message qui explique l'erreur. Le message s'affiche dans le terminal, et une erreur de script dans la console.
+
+Les **frais bancaires** et la **taxe d'État** sont calculés sur le **montant total**, exactement comme pour un paiement à un seul compte : répartir ne coûte rien de plus au joueur. Seule la part versée au Trésor public est exonérée de taxe, comme d'habitude.
+
+Sur le site, une transaction est inscrite **par compte qui reçoit une part**, toutes avec le même motif et le même type, plus une seule ligne de taxe d'État. Le joueur voit donc une ligne par compte dans son historique.
+
+> [!TIP]
+> Pour la part des PNJ, utilisez un compte PNJ (`PNJ-SA-…`), créé sur le site depuis Administration générale → Comptes PNJ.
 
 ## Utilisation
 
@@ -258,11 +299,11 @@ end
 <!-- tabs:start -->
 #### **Export (serveur)**
 ```lua
-local state --[[ integer ]], result --[[ integer|string ]], details --[[ table|nil ]] = exports["sadoj-banks"]:Transaction(accountDebit --[[ string ]], accountCredit --[[ string ]], amount --[[ integer ]], reason --[[ string ]], options --[[ table ]])
+local state --[[ integer ]], result --[[ integer|string ]], details --[[ table|nil ]] = exports["sadoj-banks"]:Transaction(accountDebit --[[ string ]], accountCredit --[[ string|table ]], amount --[[ integer ]], reason --[[ string ]], options --[[ table ]])
 ```
 * **Paramètres:**
   * **accountDebit:** Numéro du compte débité.
-  * **accountCredit:** Numéro du compte crédité.
+  * **accountCredit:** Numéro du compte crédité, ou une liste de parts pour [répartir le paiement entre plusieurs comptes](#répartition-dun-paiement-entre-plusieurs-comptes). La liste de parts est interdite en `direction = "credit"`.
   * **amount:** Montant, entier strictement positif.
   * **reason:** Motif, affiché dans l'historique des deux comptes sur le site.
   * **options:** Tableau d'options (peut être vide `{}`):
@@ -274,9 +315,11 @@ local state --[[ integer ]], result --[[ integer|string ]], details --[[ table|n
   * **state:**
     * `1`: Succès
     * `-1`: Échec
-  * **result:** En cas de succès l'identifiant de la transaction, en cas d'échec le message d'erreur (à afficher au joueur).
+  * **result:** En cas de succès l'identifiant de la transaction (la première part si le paiement est réparti), en cas d'échec le message d'erreur (à afficher au joueur).
   * **details:** En cas de succès uniquement, le détail des prélèvements :
-    * **transactionId:** Identifiant de la transaction.
+    * **transactionId:** Identifiant de la transaction (la première part si le paiement est réparti).
+    * **transactionIds:** Identifiants de toutes les transactions inscrites, une par compte crédité.
+    * **splits:** Détail par compte crédité, dans l'ordre : `{ account, amount, feeAmount, transactionId }`. Un seul élément sans répartition.
     * **feeAmount / feeRate:** Frais bancaires prélevés ($) et leur taux (%).
     * **taxAmount / taxRate:** Taxe d'État prélevée ($) et son taux total (%), surtaxe du type comprise.
     * **taxSurtaxRate:** Part du taux due au type de transaction (%).
@@ -284,22 +327,23 @@ local state --[[ integer ]], result --[[ integer|string ]], details --[[ table|n
 
 #### **Export (client)**
 ```lua
-local state --[[ integer ]], result --[[ integer|string ]], details --[[ table|nil ]] = exports["sadoj-banks"]:Transaction(accountDebit --[[ string ]], accountCredit --[[ string ]], amount --[[ integer ]], reason --[[ string ]][, options --[[ table ]]])
+local state --[[ integer ]], result --[[ integer|string ]], details --[[ table|nil ]] = exports["sadoj-banks"]:Transaction(accountDebit --[[ string ]], accountCredit --[[ string|table ]], amount --[[ integer ]], reason --[[ string ]][, options --[[ table ]]])
 ```
 Mêmes paramètres et retour que l'export serveur, l'opération est relayée au serveur.
 <!-- tabs:end -->
 
 La transaction est refusée si:
 
-- Un des deux comptes n'existe pas
-- Les deux comptes sont identiques
+- Un des comptes n'existe pas
+- Le compte débité est aussi un compte crédité
 - Le compte débité est gelé
-- La banque d'un des deux comptes est en maintenance
+- La banque d'un des comptes est en maintenance
 - Le PIN ou la carte sont invalides (si fournis)
 - Le compte débité n'a pas les fonds suffisants
+- La répartition entre plusieurs comptes est invalide (parts qui ne font pas 100 %, qui dépassent le montant…)
 
 > [!NOTE]
-> Les **frais bancaires** (banque du compte débité) et la **taxe d'État** (surtaxe du type comprise) sont **ajoutés** au montant et prélevés sur le compte débité. Le compte crédité reçoit exactement `amount`. Le message d'échec pour fonds insuffisants détaille montant, frais et taxe.
+> Les **frais bancaires** (banque du compte débité) et la **taxe d'État** (surtaxe du type comprise) sont **ajoutés** au montant et prélevés sur le compte débité. Le compte crédité reçoit exactement `amount` (ou sa part, si le paiement est réparti). Le message d'échec pour fonds insuffisants détaille montant, frais et taxe.
 
 **Exemple** : une entreprise paie une prime à un joueur.
 
@@ -325,6 +369,21 @@ end
 local state, result, details = exports["sadoj-banks"]:Transaction(from, to, 800, "Loyer local - semaine 45", { type = "rental" })
 if state == 1 then
     print(("Taxe prélevée : $%s (%s %%)"):format(details.taxAmount, details.taxRate))
+end
+```
+
+**Exemple** : un paiement réparti, 70 % pour l'entreprise et le reste pour un compte PNJ.
+
+```lua
+-- serveur
+local state, result, details = exports["sadoj-banks"]:Transaction(from, {
+    { account = companyAccount, percent = 70 },
+    { account = "PNJ-SA-000001" },
+}, 10000, "Commande de pièces", { type = "vehicle" })
+if state == 1 then
+    for _, part in ipairs(details.splits) do
+        print(("%s a reçu $%s"):format(part.account, part.amount))  -- $7,000 puis $3,000
+    end
 end
 ```
 
@@ -412,9 +471,9 @@ local success --[[ boolean ]] = exports["sadoj-banks"]:Payout(amount --[[ intege
 
 #### Options du terminal
 
-- `accountNumberForTransaction`: Numéro du compte de l'autre partie (string). **Obligatoire** si `canUseCreditCards` vaut `true`.
-  - En `Payment` : le compte qui **encaisse** le paiement.
-  - En `Payout` : le compte qui **verse** l'argent.
+- `accountNumberForTransaction`: Numéro du compte de l'autre partie (string), ou liste de parts (table). **Obligatoire** si `canUseCreditCards` vaut `true`.
+  - En `Payment` : le compte qui **encaisse** le paiement, ou une liste de parts pour [répartir le paiement entre plusieurs comptes](#répartition-dun-paiement-entre-plusieurs-comptes).
+  - En `Payout` : le compte qui **verse** l'argent (un seul numéro de compte, pas de liste de parts).
 - `safeNameForMoney`: Nom du coffre de l'autre partie (string). **Obligatoire** si `canUseWallet` vaut `true`.
   - En `Payment` : le coffre qui **reçoit** les espèces.
   - En `Payout` : le coffre d'où **sortent** les espèces. Le versement est refusé si le coffre n'en contient pas assez.
@@ -450,6 +509,28 @@ CreateThread(function()
     end
 end)
 ```
+
+**Exemple** : un concessionnaire vend un véhicule. 60 % du prix va à l'entreprise, le reste au compte PNJ du fournisseur. La taxe d'État (surtaxe « Véhicules » comprise) et les frais bancaires s'ajoutent au prix et sont payés par le joueur.
+
+```lua
+-- client
+CreateThread(function()
+    local success = exports["sadoj-banks"]:Payment(85000, "PDM - Sultan RS", {
+        accountNumberForTransaction = {
+            { account = companyAccountNumber, percent = 60 }, -- compte de l'entreprise, récupéré côté serveur
+            { account = "PNJ-SA-000001" },                    -- compte PNJ du fournisseur : reçoit le reste (40 %)
+        },
+        transactionType = "vehicle",
+    }, false, true)
+
+    if success then
+        -- livrer le véhicule
+    end
+end)
+```
+
+> [!NOTE]
+> La répartition ne concerne que le paiement **par carte**. En espèces, tout l'argent va dans le coffre `safeNameForMoney` : si vous autorisez les espèces (`canUseWallet`), répartissez-les vous-même depuis ce coffre.
 
 **Exemple** : une entreprise rachète un objet à un joueur.
 
