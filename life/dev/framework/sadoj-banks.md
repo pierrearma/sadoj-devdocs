@@ -129,41 +129,53 @@ La liste n'est pas figée dans le script : les types sont créés sur le site (A
 
 ### Répartition d'un paiement entre plusieurs comptes
 
-Un paiement par carte peut être versé sur **plusieurs comptes** à la fois. Par exemple, la vente d'un véhicule : une part pour l'entreprise, le reste pour le compte PNJ du fournisseur.
+Un paiement peut être versé à **plusieurs destinataires** à la fois, par carte (plusieurs comptes) comme en espèces (plusieurs coffres). Par exemple, la vente d'un véhicule : une part pour l'entreprise, le reste pour le fournisseur PNJ.
 
-Au lieu d'un numéro de compte, passez une liste de parts (`accountCredit` de [`Transaction`](#transaction), `accountNumberForTransaction` du [terminal](#options-du-terminal)) :
+Au lieu d'un seul destinataire, passez une liste de parts :
+
+| Moyen de paiement | Paramètre | Clé du destinataire |
+| ----------------- | --------- | ------------------- |
+| Carte | `accountCredit` de [`Transaction`](#transaction), `accountNumberForTransaction` du [terminal](#options-du-terminal) | `account` : numéro de compte |
+| Espèces | `safeNameForMoney` du [terminal](#options-du-terminal), `safes` de [`TransferWalletToSafe`](#transferwallettosafe) | `safe` : nom du coffre |
 
 ```lua
+-- Carte
 {
     { account = "PAC-700464",    percent = 60 },   -- 60 % du montant
     { account = "PNJ-SA-000002", amount = 5000 },  -- montant fixe : $5,000
     { account = "PNJ-SA-000001" },                 -- ni percent ni amount : reçoit le reste
 }
+
+-- Espèces
+{
+    { safe = "pdm",           percent = 60 },
+    { safe = "pnj_vehicules" },                    -- reçoit le reste
+}
 ```
 
 Chaque part contient :
 
-- `account`: Numéro du compte qui reçoit la part (string).
+- `account` (carte) ou `safe` (espèces) : Destinataire de la part (string).
 - `percent`: (optionnel) Pourcentage du montant, entre 0 et 100, décimales permises (number).
 - `amount`: (optionnel) Montant fixe, entier strictement positif (integer).
 
 Une part sans `percent` ni `amount` reçoit **le reste**. Une seule part peut être dans ce cas.
 
-Règles :
+Règles (identiques pour la carte et les espèces) :
 
-- 10 comptes au maximum.
+- 10 parts au maximum.
 - Sans part « reste », les pourcentages et montants fixes doivent couvrir **exactement** le montant (100 %). Avec une part « reste », ils ne doivent pas le dépasser.
 - Pas de centimes : les dollars perdus à l'arrondi des pourcentages sont redistribués, la somme des parts vaut toujours le montant payé. Une part qui tombe à $0 est ignorée.
-- Un même compte cité deux fois reçoit la somme de ses parts.
-- Uniquement pour un **paiement** (`Payment`, ou `Transaction` en `direction = "debit"`). Un versement (`Payout`, `direction = "credit"`) part toujours d'un seul compte.
-- Une répartition invalide est refusée avant tout débit, avec un message qui explique l'erreur. Le message s'affiche dans le terminal, et une erreur de script dans la console.
+- Un même destinataire cité deux fois reçoit la somme de ses parts.
+- Uniquement pour un **paiement** (`Payment`, ou `Transaction` en `direction = "debit"`). Un versement (`Payout`, `direction = "credit"`) part toujours d'un seul compte ou d'un seul coffre.
+- Une liste mal écrite (clé manquante, `percent` et `amount` ensemble…) provoque une erreur de script. Une répartition qui ne couvre pas le montant est refusée avant tout débit, avec un message affiché dans le terminal.
 
-Les **frais bancaires** et la **taxe d'État** sont calculés sur le **montant total**, exactement comme pour un paiement à un seul compte : répartir ne coûte rien de plus au joueur. Seule la part versée au Trésor public est exonérée de taxe, comme d'habitude.
+**Par carte**, les **frais bancaires** et la **taxe d'État** sont calculés sur le **montant total**, exactement comme pour un paiement à un seul compte : répartir ne coûte rien de plus au joueur. Seule la part versée au Trésor public est exonérée de taxe, comme d'habitude. Sur le site, une transaction est inscrite **par compte qui reçoit une part**, toutes avec le même motif et le même type, plus une seule ligne de taxe d'État. Le joueur voit donc une ligne par compte dans son historique.
 
-Sur le site, une transaction est inscrite **par compte qui reçoit une part**, toutes avec le même motif et le même type, plus une seule ligne de taxe d'État. Le joueur voit donc une ligne par compte dans son historique.
+**En espèces**, le porte-monnaie est débité une seule fois, puis chaque coffre reçoit sa part (une ligne par coffre dans les logs). Si un coffre refuse (coffre inexistant, inventaire arrêté…), les parts déjà déposées sont reprises et le joueur est remboursé : le paiement échoue en entier, jamais à moitié.
 
 > [!TIP]
-> Pour la part des PNJ, utilisez un compte PNJ (`PNJ-SA-…`), créé sur le site depuis Administration générale → Comptes PNJ.
+> Pour la part des PNJ, utilisez un compte PNJ (`PNJ-SA-…`), créé sur le site depuis Administration générale → Comptes PNJ, et un coffre dédié pour les espèces.
 
 ## Utilisation
 
@@ -236,6 +248,24 @@ local success --[[ boolean ]] = exports["sadoj-banks"]:RemoveWalletMoney(player 
 > Les montants doivent être des **entiers** (`math.type(n) == "integer"`) : `100` passe, `100.0` ou `99.5` provoquent une erreur. Pensez à `math.floor()` si votre montant vient d'un calcul.
 
 Chaque ajout et retrait est enregistré dans les logs `[banks]/[wallet]/wallet.csv` (`sadoj-logs`).
+
+#### TransferWalletToSafe
+<!-- tabs:start -->
+#### **Export (serveur)**
+```lua
+local success --[[ boolean ]], errorMessage --[[ string|nil ]] = exports["sadoj-banks"]:TransferWalletToSafe(player --[[ integer ]], safes --[[ string|table ]], amount --[[ integer ]][, reason --[[ string ]]])
+```
+* **Paramètres:**
+  * **player:** Server ID du joueur qui paie.
+  * **safes:** Nom du coffre qui reçoit les espèces, ou une liste de parts `{ safe = ..., percent | amount }` pour [répartir entre plusieurs coffres](#répartition-dun-paiement-entre-plusieurs-comptes).
+  * **amount:** Montant, entier strictement positif.
+  * **reason:** (optionnel) Motif, inscrit dans les logs des coffres.
+* **Retour:**
+  * **success:** `true` si les espèces ont été déplacées.
+  * **errorMessage:** En cas d'échec, le message à afficher au joueur (espèces insuffisantes, coffre inexistant, répartition invalide…).
+<!-- tabs:end -->
+
+C'est ce qu'utilise le terminal pour un paiement en espèces : à utiliser quand votre script fait payer en espèces sans ouvrir le terminal. Tout ou rien : en cas d'échec, le joueur garde ses espèces.
 
 ### Comptes bancaires
 
@@ -474,9 +504,9 @@ local success --[[ boolean ]] = exports["sadoj-banks"]:Payout(amount --[[ intege
 - `accountNumberForTransaction`: Numéro du compte de l'autre partie (string), ou liste de parts (table). **Obligatoire** si `canUseCreditCards` vaut `true`.
   - En `Payment` : le compte qui **encaisse** le paiement, ou une liste de parts pour [répartir le paiement entre plusieurs comptes](#répartition-dun-paiement-entre-plusieurs-comptes).
   - En `Payout` : le compte qui **verse** l'argent (un seul numéro de compte, pas de liste de parts).
-- `safeNameForMoney`: Nom du coffre de l'autre partie (string). **Obligatoire** si `canUseWallet` vaut `true`.
-  - En `Payment` : le coffre qui **reçoit** les espèces.
-  - En `Payout` : le coffre d'où **sortent** les espèces. Le versement est refusé si le coffre n'en contient pas assez.
+- `safeNameForMoney`: Nom du coffre de l'autre partie (string), ou liste de parts (table). **Obligatoire** si `canUseWallet` vaut `true`.
+  - En `Payment` : le coffre qui **reçoit** les espèces, ou une liste de parts pour [répartir le paiement entre plusieurs coffres](#répartition-dun-paiement-entre-plusieurs-comptes).
+  - En `Payout` : le coffre d'où **sortent** les espèces (un seul nom de coffre, pas de liste de parts). Le versement est refusé si le coffre n'en contient pas assez.
 - `transactionType`: (optionnel) Code du [type de transaction](#les-types-de-transaction), ex: `"clothing"` (string). S'applique aux paiements **par carte** : la surtaxe du type s'ajoute à la taxe d'État, payée par le joueur en `Payment` et par l'émetteur en `Payout`. Sans effet en espèces.
 - `dontUsePendingState`: Réservé, non utilisé actuellement (boolean).
 
@@ -510,7 +540,7 @@ CreateThread(function()
 end)
 ```
 
-**Exemple** : un concessionnaire vend un véhicule. 60 % du prix va à l'entreprise, le reste au compte PNJ du fournisseur. La taxe d'État (surtaxe « Véhicules » comprise) et les frais bancaires s'ajoutent au prix et sont payés par le joueur.
+**Exemple** : un concessionnaire vend un véhicule. 60 % du prix va à l'entreprise, le reste au fournisseur PNJ, que le joueur paie par carte ou en espèces. Par carte, la taxe d'État (surtaxe « Véhicules » comprise) et les frais bancaires s'ajoutent au prix et sont payés par le joueur.
 
 ```lua
 -- client
@@ -520,17 +550,18 @@ CreateThread(function()
             { account = companyAccountNumber, percent = 60 }, -- compte de l'entreprise, récupéré côté serveur
             { account = "PNJ-SA-000001" },                    -- compte PNJ du fournisseur : reçoit le reste (40 %)
         },
+        safeNameForMoney = {
+            { safe = "pdm",           percent = 60 },         -- coffre de l'entreprise
+            { safe = "pnj_vehicules" },                       -- coffre du fournisseur PNJ : le reste (40 %)
+        },
         transactionType = "vehicle",
-    }, false, true)
+    }, true, true)
 
     if success then
         -- livrer le véhicule
     end
 end)
 ```
-
-> [!NOTE]
-> La répartition ne concerne que le paiement **par carte**. En espèces, tout l'argent va dans le coffre `safeNameForMoney` : si vous autorisez les espèces (`canUseWallet`), répartissez-les vous-même depuis ce coffre.
 
 **Exemple** : une entreprise rachète un objet à un joueur.
 
