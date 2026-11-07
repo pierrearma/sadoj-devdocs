@@ -52,6 +52,7 @@
       * [sadoj-inventory](life/dev/framework/sadoj-inventory.md "sadoj-inventory")
       * [sadoj-interact](life/dev/framework/sadoj-interact.md "sadoj-interact")
       * [sadoj-jobs](life/dev/framework/sadoj-jobs.md "sadoj-jobs")
+      * [sadoj-keybind](life/dev/framework/sadoj-keybind.md "sadoj-keybind")
       * [sadoj-keyboard](life/dev/framework/sadoj-keyboard.md "sadoj-keyboard")
       * [sadoj-licenses](life/dev/framework/sadoj-licenses.md "sadoj-licenses")
       * [sadoj-logs](life/dev/framework/sadoj-logs.md "sadoj-logs")
