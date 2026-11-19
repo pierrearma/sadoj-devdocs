@@ -449,6 +449,25 @@ local keybinds --[[ table ]] = exports['sadoj-keybind']:GetActiveKeybinds(onlyVi
 
 <!-- tabs:end -->
 
+### HasActiveKeybinds
+
+Indique si au moins une touche est actuellement active selon le contexte joueur.
+
+<!-- tabs:start -->
+
+#### **Export (client)**
+
+```lua
+local hasActive --[[ boolean ]] = exports['sadoj-keybind']:HasActiveKeybinds(onlyVisible --[[ boolean|nil ]])
+```
+
+* **Paramètres:**
+  * **onlyVisible:** Si `true`, vérifie uniquement les touches actuellement rendues à l'écran (non estompées). `false` par défaut.
+* **Retour:**
+  * **hasActive:** `true` si au moins une touche correspondante est active, `false` sinon.
+
+<!-- tabs:end -->
+
 ### Refresh
 
 Force le rafraîchissement immédiat de l'affichage des touches à l'écran.
