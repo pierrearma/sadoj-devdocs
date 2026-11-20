@@ -18,6 +18,7 @@ Ce script propose un affichage tête haute (HUD / NUI) minimaliste, tactile et p
   * **Singulier** (`key`, `control`) : Touche unique ou groupe de touches alternatives (sans `+`).
   * **Pluriel** (`keys`, `controls`) : Combinaison simultanée de touches (avec `+`).
 * **Support dynamique de `RegisterKeyMapping` (`command`)** : Récupération et mise à jour en temps réel de la touche configurée par le joueur dans ses paramètres FiveM.
+* **Indicateur de maintien (`holdTime`)** : Affiche un contour discret autour de la touche avec progression horaire automatique lors du maintien (sans avoir à préciser *"Maintenir"* dans le libellé).
 * **Contextes joueur automatiques (`context`)** : Filtrage natif selon la situation (`on_foot`, `in_vehicle`, `driver`, `passenger`, `swimming`, `aiming`, `dead`, `paused`, `keyboard`, `pad`).
 * **Filtrage conditionnel sur-mesure (`filter`)** : Fonction personnalisée exécutée dynamiquement pour valider des conditions spécifiques.
 * **Système Auto-Fade et rappel (*Peek*)** :
@@ -37,6 +38,7 @@ Pour ne pas encombrer l'écran en continu, les touches s'affichent de façon dis
 1. **Changement d'état** : Dès que la situation du joueur change (montée en véhicule, passage passager, visée, etc.), les touches applicables s'affichent automatiquement pendant quelques secondes, puis s'estompent en fondu.
 2. **Coup d'œil (*Peek*)** : Une pression sur la touche `W` (`INPUT_HUD_SPECIAL` / contrôle 48) fait réapparaître immédiatement l'ensemble des touches actives pour rafraîchir la mémoire du joueur.
 3. **Touches permanentes** : L'option `permanent = true` permet à une touche de rester visible en continu, sans tenir compte du délai d'estompage.
+4. **Maintien (`holdTime`)** : Maintenir une touche avec `holdTime` la réaffiche automatiquement avec sa progression même si elle était estompée.
 
 ### Règle d'or de l'API (Singulier vs Pluriel)
 
@@ -57,6 +59,7 @@ La table de configuration passée lors de l'enregistrement ou de la modification
     controls = { 21, 51 },                       --[[ table (Facultatif*) : Combinaison simultanée d'IDs de contrôles GTA V ]]
     priority = 10,                               --[[ number (Facultatif) : Priorité d'affichage dans la barre (défaut: 10) ]]
     permanent = false,                           --[[ boolean (Facultatif) : Conserve la touche visible en permanence (défaut: false) ]]
+    holdTime = 1000,                             --[[ number|nil (Facultatif) : Durée de maintien en ms pour afficher une progression horaire ]]
     context = { on_foot = true },                --[[ table (Facultatif) : Table de conditions booléennes ]]
     filter = function(ctx) return true end,      --[[ function (Facultatif) : Fonction de validation dynamique ]]
 }
@@ -135,6 +138,14 @@ exports['sadoj-keybind']:ShowKeybind('inventory', {
     key = 'TAB',
     label = 'Inventaire',
     permanent = true,
+})
+
+-- Touche avec maintien (holdTime en ms) :
+exports['sadoj-keybind']:ShowKeybind('engine', {
+    key = 'G',
+    label = 'Moteur',
+    holdTime = 1000,
+    context = { driver = true },
 })
 ```
 
@@ -226,7 +237,7 @@ local success --[[ boolean ]] = exports['sadoj-keybind']:UpdateKeybind(id --[[ s
 
 * **Paramètres:**
   * **id:** Identifiant de la touche à modifier.
-  * **data:** Table des champs à mettre à jour (`label`, `key`, `keys`, `command`, `control`, `controls`, `context`, `filter`, `priority`, `permanent`).
+  * **data:** Table des champs à mettre à jour (`label`, `key`, `keys`, `command`, `control`, `controls`, `context`, `filter`, `priority`, `permanent`, `holdTime`).
 * **Retour:**
   * **success:** `true` si la touche a été mise à jour, `false` si l'identifiant n'existe pas.
 
