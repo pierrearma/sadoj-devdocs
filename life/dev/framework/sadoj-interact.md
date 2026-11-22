@@ -27,6 +27,8 @@ Le système gère également le maintien de touche (appui long avec barre de pro
 >   Évitez d'empiler plusieurs interactions distinctes très proches les unes des autres. Cela complique le ciblage au réticule pour le joueur et multiplie inutilement les calculs de projection écran. Privilégiez plutôt **le regroupement de plusieurs choix dans la liste `options` d'un seul et même point**, que le joueur pourra faire défiler facilement.
 > * **Gérer les interactions contextuelles :**
 >   N'ajoutez pas d'interactions permanentes si elles ne sont utiles que dans un scénario ou un contexte précis (ex: braquage en cours, étape d'un métier, entité éphémère). Ajoutez l'interaction au début du contexte et supprimez-la immédiatement (`RemoveInteraction` / `RemoveInteractionByEntity`) dès que le scénario prend fin ou que l'entité est détruite.
+> * **Activer `checkLos` uniquement lorsque c'est pertinent :**
+>   La vérification de ligne de vue est désactivée par défaut (`false`) et repose sur des raycasts asynchrones optimisés uniquement sur les points visibles à l'écran. Activez-la sur les points sensibles proches de murs/cloisons (digicodes, coffres, stashes, portes de MLO…), mais évitez de l'activer inutilement sur des interactions globales qui n'en ont pas besoin.
 
 ## Fonctionnalités
 
@@ -37,6 +39,7 @@ Le système gère également le maintien de touche (appui long avec barre de pro
 * **Maintien de touche paramétrable (Hold progress)** : Chaque option peut exiger un appui court ou un maintien prolongé avec jauge circulaire de progression (`holdTime`).
 * **Multiples options par point** : Défilement simple avec la molette de la souris, les touches directionnelles haut/bas ou le BMD de la manette.
 * **Filtrage conditionnel (`canInteract`)** : Les options ne respectant pas les conditions sont masquées ; si aucune option n'est valide, le point disparaît complètement.
+* **Vérification de ligne de vue (`checkLos`)** : Option activable par interaction, option, modèle ou bone pour masquer le dot et bloquer l'interaction à travers les murs, portes fermées, objets, vitres et grillages.
 * **Exclusion en véhicule (`disableInVehicle`)** : Masquage optionnel des actions inappropriées lorsqu'un joueur se trouve dans un véhicule.
 * **Types d'actions variés** : Déclenchement direct d'une fonction Lua client (`action`), d'un événement client (`event`) ou d'un événement serveur (`serverEvent`).
 * **Cibles multiples** :
@@ -59,7 +62,7 @@ Le système gère également le maintien de touche (appui long avec barre de pro
 | **Clavier** | `Flèche Haut` / `Flèche Bas` ou `Molette souris` | Faire défiler les options d'un point |
 | **Manette** | `BMD Haut` / `BMD Bas` | Faire défiler les options d'un point |
 
-## Distances et décalages
+## Distances, décalages et visibilité
 
 | Paramètre | Description | Valeur par défaut |
 | :--- | :--- | :--- |
@@ -68,6 +71,7 @@ Le système gère également le maintien de touche (appui long avec barre de pro
 | `offset` | Décalage `vec3` appliqué aux coordonnées du point par rapport à l'entité ou au bone. | `vec3(0.0, 0.0, 0.0)` |
 | `entityOffset` | *(Sur les bones uniquement)* Si défini sur `true`, l'orientation de `offset` est calculée par rapport à la rotation de l'entité complète et non selon la rotation locale de l'os. | `false` |
 | `directionalOffset` | *(Sur les bones uniquement)* Si défini sur `true`, oriente automatiquement l'offset vers l'extérieur de l'entité selon sa position (inverse l'axe Y selon que le bone est situé à l'avant ou à l'arrière, et l'axe X selon la droite ou la gauche). Idéal pour les capots et coffres (moteur arrière / frunk). Active également l'orientation de l'entité. | `false` |
+| `checkLos` | Exige une ligne de vue dégagée depuis la tête du joueur (masque le dot et le prompt derrière un obstacle). Accepte `true` ou une table de configuration `{ ignoreGlass?, ignoreSeeThrough?, ignoreNoCollision?, tolerance?, flags?, options? }`. | `false` |
 
 ## Structure des options
 
@@ -79,6 +83,7 @@ Chaque interaction prend en paramètre un tableau `options` contenant une ou plu
     label = 'Fouiller le véhicule',     -- (Requis) Libellé textuel affiché à l'écran
     holdTime = 500,                    -- (Facultatif) Durée de maintien en ms (0 ou false pour un appui instantané, nil pour la valeur globale de configuration)
     disableInVehicle = false,          -- (Facultatif) Masquer l'option lorsque le joueur se trouve à bord d'un véhicule
+    checkLos = false,                  -- (Facultatif) Surcharge le checkLos de l'interaction pour cette option uniquement (true, false ou table de config LOS)
 
     --- Condition d'affichage de l'option (appelée régulièrement si le joueur est proche)
     --- Astuce perf : placez les vérifications légères (variables/booléens) en premier, les natives en dernier
@@ -103,6 +108,64 @@ Chaque interaction prend en paramètre un tableau `options` contenant une ou plu
 }
 ```
 
+## Vérification de ligne de vue (`checkLos`)
+
+Par défaut (`checkLos = false`), une interaction est accessible uniquement par distance, y compris à travers un mur ou une porte fermée.
+
+L'option `checkLos` permet d'exiger une **ligne de vue dégagée depuis la tête du joueur (`SKEL_Head`)** vers le point d'interaction :
+* Tant qu'un obstacle bloque la vue, **le dot, le réticule (si aucun autre point n'est visible) et le prompt `[E]` sont masqués**.
+* Au moment exact du déclenchement (appui ou fin de maintien `holdTime`), une vérification synchrone finale confirme que la vue est toujours libre (anti-exploit).
+* Pour les interactions sur entité, modèle ou bone, le fait que le rayon touche l'entité ciblée elle-même n'est jamais considéré comme un blocage.
+* Les véhicules et peds ne bloquent pas par défaut (permet d'interagir depuis un véhicule ou lorsqu'un joueur passe devant un point).
+
+### Paramètres acceptés par `checkLos`
+
+`checkLos` peut être défini à la racine de **n'importe quel export `Add*`**, sur une entrée de `modelData`, sur un élément d'une liste de `bones`, ou sur une option individuelle dans `options` (permettant notamment de désactiver ponctuellement la vérification avec `checkLos = false` sur une seule option).
+
+| Valeur / Clé | Type | Description | Défaut |
+| :--- | :--- | :--- | :--- |
+| `checkLos = false` | `boolean` | Désactive la vérification de ligne de vue. | `false` |
+| `checkLos = true` | `boolean` | Active le profil par défaut : bloque à travers les **murs/MLO, portes/objets, vitres et grillages** (`flags = 1 \| 16 \| 64`, `options = 4`). | — |
+| `ignoreGlass` | `boolean` | *(Dans une table `checkLos = { ... }`)* Autorise l'interaction à travers les **vitres** (vitrines, guichets, fenêtres). | `false` |
+| `ignoreSeeThrough` | `boolean` | *(Dans une table `checkLos = { ... }`)* Autorise l'interaction à travers les **surfaces ajourées** (grillages, barreaux). | `false` |
+| `ignoreNoCollision` | `boolean` | *(Dans une table `checkLos = { ... }`)* Ignore les surfaces sans collision physique. Mettre `false` pour les inclure. | `true` |
+| `tolerance` | `number` | *(Dans une table `checkLos = { ... }`)* Tolérance en mètres entre le point d'impact du rayon et les coordonnées cibles. Permet aux points posés sur ou légèrement encastrés dans un mur/prop (ex: digicode, coffre) de rester accessibles du bon côté. | `0.10` |
+| `flags` | `number` | *(Avancé)* Surcharge directe du bitmask `SCRIPT_INCLUDE_*` du shapetest GTA V. | `81` (`1 \| 16 \| 64`) |
+| `options` | `number` | *(Avancé)* Surcharge directe du bitmask `SCRIPT_SHAPETEST_OPTION_*` du shapetest GTA V. | `4` |
+
+```lua
+-- 1. Profil par défaut : bloque murs, portes/props, vitres et grillages
+exports['sadoj-interact']:AddInteraction({
+    coords = vec3(55.869, -1545.935, 29.850),
+    distance = 4.0,
+    interactDst = 1.5,
+    checkLos = true,
+    options = {
+        { label = 'Ouvrir le coffre', action = function() end },
+    },
+})
+
+-- 2. Autoriser l'interaction à travers une vitre (ex: guichet)
+exports['sadoj-interact']:AddInteraction({
+    coords = vec3(149.4, -1040.2, 29.3),
+    distance = 3.0,
+    interactDst = 1.8,
+    checkLos = { ignoreGlass = true },
+    options = {
+        { label = 'Parler au guichetier', action = function() end },
+    },
+})
+
+-- 3. Autoriser à travers un grillage et augmenter la tolérance pour un point encastré dans un prop
+exports['sadoj-interact']:AddInteraction({
+    coords = vec3(10.0, 20.0, 30.0),
+    checkLos = { ignoreSeeThrough = true, tolerance = 0.20 },
+    options = {
+        { label = 'Actionner le levier', action = function() end },
+    },
+})
+```
+
 ## Gestion des bones et listes de priorité
 
 Lors de l'utilisation de `AddEntityBoneInteraction` ou de `AddGlobal*BoneInteraction`, le paramètre `bone` (ou `bones`) peut être soit un nom d'os unique (`string`), soit une **liste ordonnée de priorité**.
@@ -111,7 +174,7 @@ Le script vérifie automatiquement la présence de chaque os sur le modèle de l
 
 Chaque élément de la liste peut être :
 * Une simple chaîne de caractères (`string`).
-* Une table contenant le nom de l'os ainsi que des surcharges optionnelles (`offset`, `entityOffset`, `directionalOffset`, `distance`, `interactDst`). Tous les champs non spécifiés héritent des valeurs globales définies à la racine de l'interaction.
+* Une table contenant le nom de l'os ainsi que des surcharges optionnelles (`offset`, `entityOffset`, `directionalOffset`, `distance`, `interactDst`, `checkLos`). Tous les champs non spécifiés héritent des valeurs globales définies à la racine de l'interaction.
 
 ```lua
 -- Exemple avec liste de repli et surcharges individuelles
@@ -149,6 +212,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddInteraction({
     coords = vec3(55.869, -1545.935, 29.850), --[[ vector3 ]]
     distance = 4.0, --[[ number (facultatif, défaut: 8.0) ]]
     interactDst = 1.2, --[[ number (facultatif, défaut: 1.0) ]]
+    checkLos = false, --[[ boolean|table (facultatif, défaut: false) ]]
     options = { --[[ table ]]
         {
             label = 'Récolter des oranges',
@@ -162,7 +226,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddInteraction({
 ```
 
 * **Paramètres:**
-  * **data:** Table de configuration contenant `coords`, `options`, et optionnellement `distance`, `interactDst`, `name`.
+  * **data:** Table de configuration contenant `coords`, `options`, et optionnellement `distance`, `interactDst`, `name`, `checkLos`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction enregistrée.
 
@@ -194,7 +258,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddLocalEntityInteraction({
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `entity` (handle de l'entité locale), `options`, `offset`, `distance`, `interactDst`.
+  * **data:** Table contenant `entity` (handle de l'entité locale), `options`, `offset`, `distance`, `interactDst`, `checkLos`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
@@ -227,7 +291,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddEntityInteraction({
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `netId` (ID réseau ou handle d'entité), `options`, `distance`, `interactDst`, `offset`.
+  * **data:** Table contenant `netId` (ID réseau ou handle d'entité), `options`, `distance`, `interactDst`, `offset`, `checkLos`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
@@ -262,7 +326,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddEntityBoneInteraction({
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `entity`, `bone` (ou table de bones ordonnée), `options`, `distance`, `interactDst`, `offset`, `entityOffset`, `directionalOffset`.
+  * **data:** Table contenant `entity`, `bone` (ou table de bones ordonnée), `options`, `distance`, `interactDst`, `offset`, `entityOffset`, `directionalOffset`, `checkLos`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
@@ -278,7 +342,7 @@ Ajoute un point d'interaction sur **toutes les entités créées dans le monde**
 
 ```lua
 local id --[[ number ]] = exports['sadoj-interact']:AddModelInteraction({
-    modelData = { --[[ table<table<{model: string|number, offset?: vector3}>> ]]
+    modelData = { --[[ table<table<{model: string|number, offset?: vector3, checkLos?: boolean|table}>> ]]
         { model = 'p_dumpster_t', offset = vec3(0.0, 0.0, 0.8) },
         { model = 'prop_dumpster_02a', offset = vec3(0.0, 0.0, 0.8) },
         { model = `prop_dumpster_01a`, offset = vec3(0.0, 0.0, 0.8) },
@@ -298,7 +362,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddModelInteraction({
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant la liste `modelData` (modèles et offsets optionnels), `options`, `distance`, `interactDst`.
+  * **data:** Table contenant la liste `modelData` (modèles, offsets et `checkLos` optionnels par modèle), `options`, `distance`, `interactDst`, `checkLos`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
@@ -336,7 +400,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalObjectInteraction({
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `options`, `distance`, `interactDst`, `offset`.
+  * **data:** Table contenant `options`, `distance`, `interactDst`, `offset`, `checkLos`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
@@ -370,7 +434,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalPedInteraction({
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `options`, `distance`, `interactDst`, `offset`.
+  * **data:** Table contenant `options`, `distance`, `interactDst`, `offset`, `checkLos`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
@@ -403,7 +467,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalPedBoneInteraction(
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `bone` (ou liste de bones prioritaires), `options`, `distance`, `interactDst`, `offset`, `entityOffset`, `directionalOffset`.
+  * **data:** Table contenant `bone` (ou liste de bones prioritaires), `options`, `distance`, `interactDst`, `offset`, `entityOffset`, `directionalOffset`, `checkLos`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
@@ -436,7 +500,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalPlayerInteraction({
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `options`, `distance`, `interactDst`, `offset`.
+  * **data:** Table contenant `options`, `distance`, `interactDst`, `offset`, `checkLos`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
@@ -471,7 +535,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalPlayerBoneInteracti
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `bone` (ou liste de bones prioritaires), `options`, `distance`, `interactDst`, `offset`, `entityOffset`, `directionalOffset`.
+  * **data:** Table contenant `bone` (ou liste de bones prioritaires), `options`, `distance`, `interactDst`, `offset`, `entityOffset`, `directionalOffset`, `checkLos`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
@@ -503,7 +567,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalVehicleInteraction(
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `options`, `distance`, `interactDst`, `offset`.
+  * **data:** Table contenant `options`, `distance`, `interactDst`, `offset`, `checkLos`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
@@ -544,7 +608,7 @@ local id --[[ number ]] = exports['sadoj-interact']:AddGlobalVehicleBoneInteract
 ```
 
 * **Paramètres:**
-  * **data:** Table contenant `bone` (ou tableau de bones), `options`, `distance`, `interactDst`, `offset`, `entityOffset`, `directionalOffset`.
+  * **data:** Table contenant `bone` (ou tableau de bones), `options`, `distance`, `interactDst`, `offset`, `entityOffset`, `directionalOffset`, `checkLos`.
 * **Retourne:**
   * **id:** Identifiant numérique unique de l'interaction.
 
